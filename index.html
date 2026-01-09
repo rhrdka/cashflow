@@ -1,0 +1,842 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Cashflow - Dashboard</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+  <!-- html2canvas & jsPDF for export PDF -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+  <style>
+    :root{
+      --bs-primary: #0d6efd;
+      --card-radius: 12px;
+    }
+    body { background: #f5f7fb; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+    .card { border-radius: var(--card-radius); box-shadow: 0 6px 18px rgba(15,23,42,0.06); }
+    .muted-sm { color: #6c757d; font-size: .9rem; }
+    .balance { font-weight:700; font-size:1.5rem; letter-spacing: .2px; }
+    .table-sm td, .table-sm th { padding: .45rem; vertical-align: middle; }
+    .category-badge { font-size: .78rem; padding: .25rem .45rem; border-radius: 8px; }
+    .chart-card { min-height: 260px; }
+    .no-data { color:#6c757d; text-align:center; padding: 2rem 0; }
+    @media (max-width: 767px){
+      .chart-card { min-height: 220px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-semibold" href="#">Cashflow</a>
+      <div class="d-flex align-items-center gap-2">
+        <button id="btnExportPDF" class="btn btn-outline-secondary btn-sm me-2" title="Export PDF"><i class="bi bi-file-earmark-pdf"></i> PDF</button>
+        <button id="btnExportCSV" class="btn btn-outline-success btn-sm me-2" title="Export CSV"><i class="bi bi-file-earmark-arrow-down"></i> CSV</button>
+        <button id="btnImportCSV" class="btn btn-outline-primary btn-sm" title="Import CSV"><i class="bi bi-file-earmark-arrow-up"></i> Import</button>
+        <button id="btnAdd" class="btn btn-primary btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#modalForm"><i class="bi bi-plus-lg"></i> Tambah</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container my-4">
+    <div id="dashboardArea">
+      <!-- Summary cards -->
+      <div class="row g-3">
+        <div class="col-12 col-md-6 col-xl-3">
+          <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <div class="muted-sm">Saldo</div>
+                <div id="cardBalance" class="balance">Rp 0</div>
+                <div id="cardNetLabel" class="muted-sm">Total</div>
+              </div>
+              <div class="text-end">
+                <i class="bi bi-wallet2 fs-3 text-primary"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-6 col-xl-3">
+          <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <div class="muted-sm">Pemasukan</div>
+                <div id="cardIncome" class="balance text-success">Rp 0</div>
+                <div class="muted-sm">Total pemasukan</div>
+              </div>
+              <div class="text-end">
+                <i class="bi bi-cash-stack fs-3 text-success"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-6 col-xl-3">
+          <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <div class="muted-sm">Pengeluaran</div>
+                <div id="cardExpense" class="balance text-danger">Rp 0</div>
+                <div class="muted-sm">Total pengeluaran</div>
+              </div>
+              <div class="text-end">
+                <i class="bi bi-credit-card-2-back fs-3 text-danger"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-6 col-xl-3">
+          <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <div class="muted-sm">Transaksi</div>
+                <div id="cardCount" class="balance">0</div>
+                <div class="muted-sm">Total transaksi</div>
+              </div>
+              <div class="text-end">
+                <i class="bi bi-list-check fs-3 text-muted"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="row my-3 g-3">
+        <div class="col-12 col-lg-8">
+          <div class="card p-3 chart-card">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <div>
+                <h6 class="mb-0">Tren Saldo</h6>
+                <small class="muted-sm">Per hari (7/30/90 hari pilihan)</small>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <select id="trendRange" class="form-select form-select-sm">
+                  <option value="7">7 Hari</option>
+                  <option value="30" selected>30 Hari</option>
+                  <option value="90">90 Hari</option>
+                  <option value="365">1 Tahun</option>
+                  <option value="all">Semua</option>
+                </select>
+              </div>
+            </div>
+            <canvas id="lineChart" style="max-height:320px"></canvas>
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-4">
+          <div class="card p-3 chart-card">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <div>
+                <h6 class="mb-0">Komposisi Kategori</h6>
+                <small class="muted-sm">Pemasukan vs Pengeluaran per kategori</small>
+              </div>
+              <div>
+                <button id="btnRefreshCharts" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-clockwise"></i></button>
+              </div>
+            </div>
+            <canvas id="pieChart" style="max-height:260px"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls + History -->
+      <div class="row g-3">
+        <div class="col-12">
+          <div class="card p-3">
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-3">
+              <div class="d-flex gap-2 align-items-center">
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text"><i class="bi bi-search"></i></span>
+                  <input id="searchInput" type="text" class="form-control" placeholder="Cari deskripsi atau kategori...">
+                </div>
+                <select id="filterTime" class="form-select form-select-sm w-auto">
+                  <option value="all" selected>Semua</option>
+                  <option value="today">Hari ini</option>
+                  <option value="month">Bulan ini</option>
+                  <option value="year">Tahun ini</option>
+                  <option value="custom">Rentang...</option>
+                </select>
+                <div id="customRange" class="d-none d-flex gap-2 align-items-center">
+                  <input id="customFrom" type="date" class="form-control form-control-sm">
+                  <input id="customTo" type="date" class="form-control form-control-sm">
+                  <button id="applyRange" class="btn btn-sm btn-outline-primary">Terapkan</button>
+                </div>
+              </div>
+
+              <div class="d-flex gap-2">
+                <button id="btnClearAll" class="btn btn-outline-danger btn-sm">Reset Data</button>
+                <button id="btnShowAll" class="btn btn-outline-secondary btn-sm">Tampilkan Semua</button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table-sm table-hover align-middle" id="transactionsTable">
+                <thead class="table-light">
+                  <tr>
+                    <th style="width:120px">Tanggal</th>
+                    <th>Deskripsi</th>
+                    <th style="width:140px">Kategori</th>
+                    <th style="width:120px" class="text-end">Jumlah</th>
+                    <th style="width:120px" class="text-center">Tipe</th>
+                    <th style="width:110px" class="text-end">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="transactionsBody">
+                  <!-- rows -->
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div> <!-- /dashboardArea -->
+  </main>
+
+  <!-- Modal: Add / Edit Transaction -->
+  <div class="modal fade" id="modalForm" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <form id="formTransaction" class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalTitle">Tambah Transaksi</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="txId">
+          <div class="mb-2">
+            <label class="form-label">Tanggal</label>
+            <input id="txDate" class="form-control" type="date" required>
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Deskripsi</label>
+            <input id="txDesc" class="form-control" type="text" placeholder="Contoh: Gaji, Belanja, .." required>
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Kategori</label>
+            <input id="txCategory" class="form-control" type="text" placeholder="Contoh: Makanan, Gaji, Transport" required>
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Jumlah (Rp)</label>
+            <input id="txAmount" class="form-control" type="number" step="0.01" min="0" placeholder="0" required>
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Tipe</label>
+            <select id="txType" class="form-select">
+              <option value="in">Pemasukan</option>
+              <option value="out" selected>Pengeluaran</option>
+            </select>
+          </div>
+          <div class="form-text">Jumlah harus positif. Untuk pengeluaran pilih tipe "Pengeluaran".</div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary btn-sm">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Hidden file input for import -->
+  <input id="fileInput" type="file" accept=".csv" class="d-none">
+
+  <!-- Scripts -->
+  <script>
+    // ====== Konfigurasi & Util ======
+    const STORAGE_KEY = 'cashflow_data_v1';
+    const VERSION = '1';
+    const $ = (sel, ctx = document) => ctx.querySelector(sel);
+    const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
+
+    function formatCurrency(value) {
+      const v = Number(value) || 0;
+      return v.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 });
+    }
+    function formatDateISO(date) {
+      const d = new Date(date);
+      if (isNaN(d)) return '';
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth()+1).padStart(2,'0');
+      const dd = String(d.getDate()).padStart(2,'0');
+      return `${yyyy}-${mm}-${dd}`;
+    }
+    function formatDateDisplay(dateISO) {
+      const d = new Date(dateISO);
+      if (isNaN(d)) return '';
+      return d.toLocaleDateString('id-ID');
+    }
+    function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+
+    // ====== Data Model ======
+    let transactions = [];
+    // load initial data if none
+    function loadData() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        try {
+          transactions = JSON.parse(raw) || [];
+        } catch(e) {
+          transactions = [];
+          console.error('Gagal mem-parse data localStorage, reset.', e);
+        }
+      } else {
+        // contoh data awal (opsional) - hapus/ubah jika tidak perlu
+        transactions = [
+          { id: uid(), date: formatDateISO(new Date()), description: 'Pendapatan contoh', category: 'Gaji', amount: 5000000, type: 'in' },
+          { id: uid(), date: formatDateISO(new Date()), description: 'Belanja bulanan', category: 'Belanja', amount: 750000, type: 'out' }
+        ];
+        saveData();
+      }
+    }
+    function saveData() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
+    }
+    function resetData() {
+      if (!confirm('Reset semua data? Tindakan ini tidak dapat dibatalkan.')) return;
+      transactions = [];
+      saveData();
+      renderAll();
+    }
+
+    // ====== Rendering ======
+    const cardBalance = $('#cardBalance');
+    const cardIncome = $('#cardIncome');
+    const cardExpense = $('#cardExpense');
+    const cardCount = $('#cardCount');
+    const transactionsBody = $('#transactionsBody');
+    const searchInput = $('#searchInput');
+    const filterTime = $('#filterTime');
+    const customRange = $('#customRange');
+    const customFrom = $('#customFrom');
+    const customTo = $('#customTo');
+    const applyRange = $('#applyRange');
+    const btnShowAll = $('#btnShowAll');
+    const btnClearAll = $('#btnClearAll');
+
+    function calcSummary(list) {
+      let income = 0, expense = 0;
+      for (const t of list) {
+        if (t.type === 'in') income += Number(t.amount) || 0;
+        else expense += Number(t.amount) || 0;
+      }
+      return { income, expense, balance: income - expense, count: list.length };
+    }
+
+    function renderSummary(filtered = transactions) {
+      const s = calcSummary(filtered);
+      cardIncome.textContent = formatCurrency(s.income);
+      cardExpense.textContent = formatCurrency(s.expense);
+      cardBalance.textContent = formatCurrency(s.balance);
+      cardCount.textContent = s.count;
+      $('#cardNetLabel').textContent = s.balance >= 0 ? 'Saldo bersih' : 'Saldo negatif';
+    }
+
+    function createCategoryBadge(category) {
+      return `<span class="badge bg-light text-truncate category-badge" title="${category}">${escapeHtml(category)}</span>`;
+    }
+
+    function escapeHtml(s='') {
+      return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+    }
+
+    function renderTransactions(filterOpts = {}) {
+      const q = (filterOpts.q || '').toLowerCase().trim();
+      const time = filterOpts.time || 'all';
+      const from = filterOpts.from;
+      const to = filterOpts.to;
+      let list = [...transactions];
+
+      if (q) {
+        list = list.filter(t => (t.description||'').toLowerCase().includes(q) || (t.category||'').toLowerCase().includes(q));
+      }
+
+      const now = new Date();
+      if (time === 'today') {
+        const today = formatDateISO(now);
+        list = list.filter(t => t.date === today);
+      } else if (time === 'month') {
+        const y = now.getFullYear(), m = now.getMonth();
+        list = list.filter(t => {
+          const d = new Date(t.date);
+          return d.getFullYear() === y && d.getMonth() === m;
+        });
+      } else if (time === 'year') {
+        const y = now.getFullYear();
+        list = list.filter(t => new Date(t.date).getFullYear() === y);
+      } else if (time === 'custom' && from && to) {
+        const fromT = new Date(from).setHours(0,0,0,0);
+        const toT = new Date(to).setHours(23,59,59,999);
+        list = list.filter(t => {
+          const d = new Date(t.date).getTime();
+          return d >= fromT && d <= toT;
+        });
+      }
+
+      // sort desc by date
+      list.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+      // render rows
+      transactionsBody.innerHTML = '';
+      if (list.length === 0) {
+        transactionsBody.innerHTML = '<tr><td colspan="6"><div class="no-data">Belum ada transaksi sesuai filter</div></td></tr>';
+      } else {
+        for (const t of list) {
+          const tr = document.createElement('tr');
+          const sign = t.type === 'in' ? '+' : '-';
+          const amt = formatCurrency((t.type === 'out' ? -1 : 1) * Math.abs(Number(t.amount)));
+          tr.innerHTML = `
+            <td>${formatDateDisplay(t.date)}</td>
+            <td>${escapeHtml(t.description)}</td>
+            <td>${createCategoryBadge(t.category)}</td>
+            <td class="text-end">${amt}</td>
+            <td class="text-center"><span class="badge ${t.type==='in'?'bg-success':'bg-danger'}">${t.type==='in'?'Pemasukan':'Pengeluaran'}</span></td>
+            <td class="text-end">
+              <div class="btn-group btn-group-sm" role="group">
+                <button class="btn btn-outline-primary btn-sm btn-edit" data-id="${t.id}" title="Edit"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-outline-danger btn-sm btn-delete" data-id="${t.id}" title="Hapus"><i class="bi bi-trash"></i></button>
+              </div>
+            </td>
+          `;
+          transactionsBody.appendChild(tr);
+        }
+      }
+
+      // attach event listeners for edit/delete
+      $$('.btn-edit', transactionsBody).forEach(b => b.addEventListener('click', e => {
+        const id = b.dataset.id;
+        openEditModal(id);
+      }));
+      $$('.btn-delete', transactionsBody).forEach(b => b.addEventListener('click', e => {
+        const id = b.dataset.id;
+        deleteTransaction(id);
+      }));
+
+      renderSummary(list);
+      updateCharts(); // keep charts in sync with current list (we use full transactions for charts but you may want filtered)
+    }
+
+    function renderAll() {
+      renderSummary(transactions);
+      renderTransactions({ q: searchInput.value, time: filterTime.value, from: customFrom.value, to: customTo.value });
+      updateCharts();
+    }
+
+    // ====== CRUD ======
+    function addTransaction(tx) {
+      tx.id = uid();
+      transactions.push(tx);
+      saveData();
+      renderAll();
+    }
+    function updateTransaction(id, data) {
+      const idx = transactions.findIndex(t => t.id === id);
+      if (idx === -1) return;
+      transactions[idx] = { ...transactions[idx], ...data };
+      saveData();
+      renderAll();
+    }
+    function deleteTransaction(id) {
+      if (!confirm('Hapus transaksi ini?')) return;
+      transactions = transactions.filter(t => t.id !== id);
+      saveData();
+      renderAll();
+    }
+
+    // ====== Modal & Form Handling ======
+    const modal = new bootstrap.Modal($('#modalForm'));
+    const modalTitle = $('#modalTitle');
+    const formTransaction = $('#formTransaction');
+
+    $('#btnAdd').addEventListener('click', () => {
+      openAddModal();
+    });
+
+    function openAddModal() {
+      modalTitle.textContent = 'Tambah Transaksi';
+      $('#txId').value = '';
+      $('#txDate').value = formatDateISO(new Date());
+      $('#txDesc').value = '';
+      $('#txCategory').value = '';
+      $('#txAmount').value = '';
+      $('#txType').value = 'out';
+      modal.show();
+    }
+
+    function openEditModal(id) {
+      const tx = transactions.find(t => t.id === id);
+      if (!tx) { alert('Transaksi tidak ditemukan'); return; }
+      modalTitle.textContent = 'Edit Transaksi';
+      $('#txId').value = tx.id;
+      $('#txDate').value = formatDateISO(tx.date);
+      $('#txDesc').value = tx.description;
+      $('#txCategory').value = tx.category;
+      $('#txAmount').value = tx.amount;
+      $('#txType').value = tx.type;
+      modal.show();
+    }
+
+    formTransaction.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const id = $('#txId').value;
+      const data = {
+        date: $('#txDate').value || formatDateISO(new Date()),
+        description: $('#txDesc').value.trim() || '(Tanpa deskripsi)',
+        category: $('#txCategory').value.trim() || 'Lainnya',
+        amount: Math.abs(Number($('#txAmount').value) || 0),
+        type: $('#txType').value
+      };
+      if (!data.amount) { alert('Masukkan jumlah yang valid'); return; }
+      if (id) updateTransaction(id, data);
+      else addTransaction(data);
+      modal.hide();
+    });
+
+    // ====== Filters & Search ======
+    filterTime.addEventListener('change', () => {
+      if (filterTime.value === 'custom') customRange.classList.remove('d-none');
+      else {
+        customRange.classList.add('d-none');
+        renderTransactions({ q: searchInput.value, time: filterTime.value, from: customFrom.value, to: customTo.value });
+      }
+    });
+    applyRange.addEventListener('click', () => {
+      if (!customFrom.value || !customTo.value) { alert('Pilih tanggal dari dan ke'); return; }
+      renderTransactions({ q: searchInput.value, time: 'custom', from: customFrom.value, to: customTo.value });
+    });
+    searchInput.addEventListener('input', debounce(() => {
+      renderTransactions({ q: searchInput.value, time: filterTime.value, from: customFrom.value, to: customTo.value });
+    }, 250));
+
+    btnShowAll.addEventListener('click', () => {
+      searchInput.value = '';
+      filterTime.value = 'all';
+      customRange.classList.add('d-none');
+      renderTransactions({ q: '', time: 'all' });
+    });
+
+    btnClearAll.addEventListener('click', resetData);
+
+    // ====== Charts ======
+    let lineChart = null, pieChart = null;
+    const lineCtx = $('#lineChart');
+    const pieCtx = $('#pieChart');
+
+    function aggregateForLine(range='30') {
+      // returns { labels:[], data:[] } for last N days or all
+      let items = [...transactions];
+      items.sort((a,b) => new Date(a.date) - new Date(b.date));
+      if (range !== 'all') {
+        const n = Number(range);
+        const start = new Date();
+        start.setDate(start.getDate() - (n-1));
+        start.setHours(0,0,0,0);
+        items = items.filter(t => new Date(t.date) >= start);
+      }
+      // build daily balance series
+      const map = {};
+      for (const t of items) {
+        const d = formatDateISO(t.date);
+        const val = t.type === 'in' ? Number(t.amount) : -Number(t.amount);
+        map[d] = (map[d] || 0) + val;
+      }
+      // convert to cumulative balance
+      const dates = [];
+      const today = new Date();
+      let firstDate;
+      if (range === 'all') {
+        if (items.length === 0) {
+          firstDate = formatDateISO(new Date());
+        } else {
+          firstDate = formatDateISO(items[0].date);
+        }
+      } else {
+        const n = Number(range);
+        const start = new Date();
+        start.setDate(start.getDate() - (n-1));
+        firstDate = formatDateISO(start);
+      }
+      const endDate = formatDateISO(today);
+      const cur = new Date(firstDate);
+      const labels = [];
+      const data = [];
+      let cumulative = 0;
+      // if there are earlier transactions before firstDate, incorporate their sum
+      const earlierSum = transactions
+        .filter(t => new Date(t.date) < new Date(firstDate))
+        .reduce((s,t) => s + (t.type==='in'?Number(t.amount):-Number(t.amount)), 0);
+      cumulative = earlierSum;
+      while (formatDateISO(cur) <= endDate) {
+        const key = formatDateISO(cur);
+        cumulative += (map[key] || 0);
+        labels.push(key);
+        data.push(Math.round(cumulative));
+        cur.setDate(cur.getDate() + 1);
+      }
+      return { labels, data };
+    }
+
+    function aggregateForPie() {
+      const map = {};
+      for (const t of transactions) {
+        const cat = t.category || 'Lainnya';
+        const val = t.type === 'in' ? Number(t.amount) : Number(t.amount); // use absolute sums per category
+        map[cat] = (map[cat] || 0) + val;
+      }
+      const labels = Object.keys(map);
+      const data = labels.map(k => Math.round(map[k]));
+      return { labels, data };
+    }
+
+    function updateCharts() {
+      // line chart
+      const range = $('#trendRange').value;
+      const lineAgg = aggregateForLine(range);
+      const lineLabels = lineAgg.labels.map(d => (new Date(d)).toLocaleDateString('id-ID'));
+      const lineData = lineAgg.data;
+
+      if (lineChart) {
+        lineChart.data.labels = lineLabels;
+        lineChart.data.datasets[0].data = lineData;
+        lineChart.update();
+      } else {
+        lineChart = new Chart(lineCtx, {
+          type: 'line',
+          data: {
+            labels: lineLabels,
+            datasets: [{
+              label: 'Saldo (Rp)',
+              data: lineData,
+              borderColor: '#0d6efd',
+              backgroundColor: 'rgba(13,110,253,0.08)',
+              fill: true,
+              tension: 0.25,
+              pointRadius: 0
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              tooltip: { callbacks: { label: ctx => formatCurrency(ctx.parsed.y) } },
+              legend: { display: false }
+            },
+            scales: {
+              y: { ticks: { callback: v => formatCurrency(v) } }
+            }
+          }
+        });
+      }
+
+      // pie chart
+      const pieAgg = aggregateForPie();
+      const pieLabels = pieAgg.labels;
+      const pieData = pieAgg.data;
+      const backgroundColors = generateColors(pieLabels.length);
+
+      if (pieChart) {
+        pieChart.data.labels = pieLabels;
+        pieChart.data.datasets[0].data = pieData;
+        pieChart.data.datasets[0].backgroundColor = backgroundColors;
+        pieChart.update();
+      } else {
+        pieChart = new Chart(pieCtx, {
+          type: 'doughnut',
+          data: {
+            labels: pieLabels,
+            datasets: [{
+              data: pieData,
+              backgroundColor: backgroundColors,
+              borderWidth: 0
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              tooltip: { callbacks: { label: ctx => `${ctx.label}: ${formatCurrency(ctx.parsed)}` } },
+              legend: { position: 'bottom', labels: { boxWidth: 12 } }
+            },
+            cutout: '60%'
+          }
+        });
+      }
+    }
+
+    function generateColors(n) {
+      const base = [
+        '#0d6efd','#198754','#dc3545','#fd7e14','#6f42c1','#20c997','#6610f2','#0dcaf0','#ffc107','#e83e8c'
+      ];
+      const out = [];
+      for (let i=0;i<n;i++){
+        out.push(base[i % base.length]);
+      }
+      return out;
+    }
+
+    $('#trendRange').addEventListener('change', updateCharts);
+    $('#btnRefreshCharts').addEventListener('click', updateCharts);
+
+    // ====== Import / Export CSV ======
+    const fileInput = $('#fileInput');
+    $('#btnImportCSV').addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', handleFileSelect);
+
+    function handleFileSelect(e) {
+      const f = e.target.files[0];
+      if (!f) return;
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        const text = ev.target.result;
+        try {
+          const parsed = parseCSV(text);
+          // parsed is array of objects. Expect headers: date,description,category,amount,type
+          let imported = 0;
+          for (const r of parsed) {
+            if (!r.date || !r.amount) continue;
+            const tx = {
+              id: uid(),
+              date: formatDateISO(r.date),
+              description: r.description || '(Imported)',
+              category: r.category || 'Lainnya',
+              amount: Math.abs(Number(r.amount) || 0),
+              type: (r.type === 'in' || r.type === 'out') ? r.type : (Number(r.amount) >= 0 ? 'in' : 'out')
+            };
+            transactions.push(tx);
+            imported++;
+          }
+          if (imported > 0) {
+            saveData();
+            renderAll();
+            alert('Berhasil mengimpor ' + imported + ' transaksi.');
+          } else alert('Tidak ada data valid yang diimpor.');
+        } catch (err) {
+          alert('Gagal mengimpor CSV: ' + err);
+        }
+      };
+      reader.readAsText(f, 'utf-8');
+      // reset
+      fileInput.value = '';
+    }
+
+    function parseCSV(text) {
+      // simple CSV parser, returns array of objects using header row
+      const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+      if (lines.length === 0) return [];
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+      const rows = [];
+      for (let i=1;i<lines.length;i++){
+        const parts = splitCSVLine(lines[i]);
+        if (parts.length === 0) continue;
+        const obj = {};
+        for (let j=0;j<headers.length;j++){
+          obj[headers[j]] = parts[j] !== undefined ? parts[j].trim() : '';
+        }
+        rows.push(obj);
+      }
+      return rows;
+    }
+    function splitCSVLine(line) {
+      // handles quotes
+      const result = [];
+      let cur = '', inQuote = false;
+      for (let i=0;i<line.length;i++){
+        const ch = line[i];
+        if (ch === '"' ) {
+          if (inQuote && line[i+1] === '"') { cur += '"'; i++; } else inQuote = !inQuote;
+        } else if (ch === ',' && !inQuote) {
+          result.push(cur);
+          cur = '';
+        } else cur += ch;
+      }
+      result.push(cur);
+      return result;
+    }
+
+    $('#btnExportCSV').addEventListener('click', () => {
+      if (transactions.length === 0) { alert('Tidak ada transaksi untuk diekspor.'); return; }
+      const header = ['date','description','category','amount','type'];
+      const rows = transactions.map(t => [
+        `"${t.date}"`,
+        `"${(t.description||'').replace(/"/g,'""')}"`,
+        `"${(t.category||'').replace(/"/g,'""')}"`,
+        `${t.amount}`,
+        `${t.type}`
+      ].join(','));
+      const csv = [header.join(','), ...rows].join('\\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'cashflow_export_' + formatDateISO(new Date()) + '.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // ====== Export PDF (screenshot dashboard) ======
+    $('#btnExportPDF').addEventListener('click', async () => {
+      const container = document.querySelector('main');
+      if (!container) { alert('Area tidak ditemukan'); return; }
+      const opt = { scale: 2, useCORS: true, logging: false };
+      const canv = await html2canvas(container, opt);
+      const imgData = canv.toDataURL('image/png');
+      const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const imgProps = pdf.getImageProperties(imgData);
+      const imgRatio = imgProps.width / imgProps.height;
+      const pdfImgWidth = pageWidth - 20;
+      const pdfImgHeight = pdfImgWidth / imgRatio;
+      pdf.addImage(imgData, 'PNG', 10, 10, pdfImgWidth, Math.min(pdfImgHeight, pageHeight - 20));
+      pdf.save('cashflow_' + formatDateISO(new Date()) + '.pdf');
+    });
+
+    // ====== Utility: debounce ======
+    function debounce(fn, wait = 200) {
+      let t;
+      return (...args) => {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), wait);
+      };
+    }
+
+    // ====== Escape load & init ======
+    function init() {
+      loadData();
+      renderAll();
+      // attach other handlers for edit buttons dynamically created in renderTransactions
+      document.body.addEventListener('click', function(e) {
+        if (e.target.matches('.btn-edit, .btn-edit *')) {
+          const btn = e.target.closest('.btn-edit');
+          if (btn) openEditModal(btn.dataset.id);
+        } else if (e.target.matches('.btn-delete, .btn-delete *')) {
+          const btn = e.target.closest('.btn-delete');
+          if (btn) deleteTransaction(btn.dataset.id);
+        }
+      });
+    }
+
+    // init on load
+    init();
+
+    // ====== Extra: Keyboard shortcuts (optional) ======
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'n') {
+        e.preventDefault();
+        openAddModal();
+      }
+    });
+
+    // ====== Small accessibility: confirm before leaving if unsaved modal ======
+    window.addEventListener('beforeunload', (e) => {
+      // no-op currently
+    });
+
+  </script>
+</body>
+</html>
