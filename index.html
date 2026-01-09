@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Cashflow — Multi-Page (Transitions)</title>
+  <title>Cashflow — Clean White Text</title>
 
   <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -18,9 +18,7 @@
   <style>
     :root{
       --accent:#5b9df9;
-      --muted:#98a0b3;
       --card-radius:14px;
-      --read-bg: rgba(255,255,255,0.03);
       --panel-bg: rgba(255,255,255,0.02);
     }
     html,body{height:100%}
@@ -28,7 +26,7 @@
       margin:0;
       font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;
       background:linear-gradient(180deg,#071025 0%,#041225 100%);
-      color:#e6eef8;
+      color:#ffffff; /* all text white */
       -webkit-font-smoothing:antialiased;
       padding-bottom:96px;
     }
@@ -36,14 +34,14 @@
     .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
     .brand{display:flex;gap:12px;align-items:center}
     .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#bfe1ff,#5b9df9);display:flex;align-items:center;justify-content:center;color:#042a5a}
-    .brand h1{margin:0;font-size:1rem}
-    .brand small{display:block;color:var(--muted);font-size:.78rem;margin-top:2px}
+    .brand h1{margin:0;font-size:1rem;color:#fff}
+    .brand small{display:block;color:#fff;font-size:.78rem;margin-top:2px}
 
     .grid{display:grid;gap:12px;grid-template-columns:repeat(12,1fr)}
     .card{background:linear-gradient(180deg,var(--panel-bg), rgba(255,255,255,0.01));border-radius:var(--card-radius);border:1px solid rgba(255,255,255,0.03);padding:12px;transition:transform .18s,box-shadow .18s}
     .card:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(3,6,23,0.6)}
-    .muted-sm{color:var(--muted);font-size:.85rem}
-    .balance{font-weight:700;font-size:1.2rem;color:#fff}
+    .muted-sm{color:#ffffff !important;font-size:.85rem}
+    .balance{font-weight:700;font-size:1.2rem;color:#ffffff}
     .icon-circle{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center}
 
     .card-1,.card-2,.card-3,.card-4{grid-column:span 3}
@@ -54,38 +52,36 @@
     @media (max-width:900px){.charts{grid-template-columns:1fr}}
 
     .transactions-card{grid-column:1/-1;margin-top:12px;padding:10px}
-    .badge-cat{font-size:.78rem;padding:.25rem .45rem;border-radius:10px;background:var(--read-bg);color:var(--muted);border:1px solid rgba(255,255,255,0.02)}
+    .badge-cat{font-size:.78rem;padding:.25rem .45rem;border-radius:10px;background:transparent;color:#ffffff;border:1px solid rgba(255,255,255,0.04)}
 
     /* FAB */
     .fab-wrap{position:fixed;right:18px;bottom:18px;z-index:1100;display:flex;align-items:center;justify-content:center;gap:8px}
-    .fab-bg{position:absolute;right:0;bottom:0;width:84px;height:84px;border-radius:50%;background:radial-gradient(circle at 30% 30%,rgba(91,157,249,0.16),rgba(91,157,249,0.06));filter:blur(6px);z-index:-1}
+    .fab-bg{position:absolute;right:0;bottom:0;width:84px;height:84px;border-radius:50%;background:radial-gradient(circle at 30% 30%,rgba(91,157,249,0.12),rgba(91,157,249,0.04));filter:blur(6px);z-index:-1}
     .fab{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#5b9df9,#2b7be8);box-shadow:0 12px 30px rgba(43,123,232,0.25);color:#fff;border:0;display:flex;align-items:center;justify-content:center;font-size:1.4rem}
     .fab:active{transform:translateY(1px) scale(.995)}
 
     /* Non-transparent modal (solid) */
     .modal-content{background:#081726;color:inherit;border-radius:12px;border:1px solid rgba(255,255,255,0.06)}
-    .form-control,.form-select{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);color:inherit}
+    .form-control,.form-select{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);color:#fff}
 
     .table-responsive{-webkit-overflow-scrolling:touch}
+    table, th, td { color: #ffffff !important; } /* ensure table text white */
 
     /* page nav */
     .page-nav { display:flex; gap:8px; margin: 10px 0 18px; flex-wrap:wrap; }
-    .page-nav .btn { min-width:120px; }
+    .page-nav .btn { min-width:120px; color: #fff; border-color: rgba(255,255,255,0.06); background: transparent; }
+    .page-nav .btn:hover { color: #fff; }
 
-    /* readable background utility */
-    .readable { background: var(--read-bg); padding:6px 10px; border-radius:8px; display:inline-block; color:inherit; }
-    .balance.readable { padding:8px 12px; font-size:1.15rem; }
-    .muted-sm.readable { padding:4px 8px; border-radius:6px; }
-    .stat-value.readable { padding:6px 10px; border-radius:8px; display:inline-block; }
+    /* removed per-word backgrounds: keep text white only */
+    .readable { background: transparent !important; padding: 0 !important; border-radius: 0 !important; color: #ffffff !important; }
+    .balance.readable { padding: 0 !important; font-size:1.15rem; }
+    .muted-sm.readable { padding: 0 !important; border-radius: 0 !important; color:#ffffff !important; }
+    .stat-value.readable { padding: 0 !important; border-radius: 0 !important; display:inline-block; color:#ffffff !important; }
 
     /* transition classes for pages */
     .page { opacity: 0; transform: translateY(8px) scale(.998); transition: opacity .36s ease, transform .36s ease; will-change: opacity, transform; }
     .page.showing { opacity: 1; transform: translateY(0) scale(1); }
     .page.hiding { opacity: 0; transform: translateY(-8px) scale(.996); }
-
-    /* slide keyframes (fallback) */
-    @keyframes slideIn { from { opacity:0; transform: translateY(12px) } to { opacity:1; transform:none } }
-    @keyframes slideOut { from { opacity:1; transform:none } to { opacity:0; transform: translateY(-8px) } }
 
     .btn.active-page { background: linear-gradient(90deg,#0e2a48,#073049); color:#fff; border-radius:10px; }
 
@@ -100,8 +96,8 @@
       <div class="brand">
         <div class="logo"><i class="bi bi-cash-stack"></i></div>
         <div>
-          <h1><span class="readable">Cashflow</span></h1>
-          <small class="muted-sm readable">Multi-page • Readable background • Transitions</small>
+          <h1 class="readable">Cashflow</h1>
+          <small class="muted-sm readable">Multi-page • All text white</small>
         </div>
       </div>
 
@@ -200,10 +196,10 @@
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2 mb-3">
           <div class="d-flex gap-2 align-items-center" style="flex:1; min-width:200px;">
             <div class="input-group input-group-sm" style="max-width:360px;">
-              <span class="input-group-text bg-transparent border-0 text-muted"><i class="bi bi-search"></i></span>
-              <input id="searchInput" type="text" class="form-control form-control-sm" placeholder="Cari deskripsi atau kategori...">
+              <span class="input-group-text bg-transparent border-0 text-white"><i class="bi bi-search"></i></span>
+              <input id="searchInput" type="text" class="form-control form-control-sm" placeholder="Cari deskripsi atau kategori..." style="color:#fff;">
             </div>
-            <select id="filterTime" class="form-select form-select-sm" style="width:150px;">
+            <select id="filterTime" class="form-select form-select-sm" style="width:150px; color:#fff;">
               <option value="all" selected>Semua</option>
               <option value="today">Hari ini</option>
               <option value="month">Bulan ini</option>
@@ -211,8 +207,8 @@
               <option value="custom">Rentang...</option>
             </select>
             <div id="customRange" class="d-none d-flex gap-2 align-items-center">
-              <input id="customFrom" type="date" class="form-control form-control-sm">
-              <input id="customTo" type="date" class="form-control form-control-sm">
+              <input id="customFrom" type="date" class="form-control form-control-sm" style="color:#fff;">
+              <input id="customTo" type="date" class="form-control form-control-sm" style="color:#fff;">
               <button id="applyRange" class="btn btn-sm btn-outline-light">Terapkan</button>
             </div>
           </div>
@@ -227,12 +223,12 @@
           <table class="table table-borderless table-hover align-middle mb-0" style="min-width:720px;">
             <thead>
               <tr>
-                <th style="width:110px"><span class="readable">Tanggal</span></th>
-                <th><span class="readable">Deskripsi</span></th>
-                <th style="width:160px"><span class="readable">Kategori</span></th>
-                <th style="width:120px" class="text-end"><span class="readable">Pemasukan</span></th>
-                <th style="width:120px" class="text-end"><span class="readable">Pengeluaran</span></th>
-                <th style="width:110px" class="text-end"><span class="readable">Aksi</span></th>
+                <th style="width:110px">Tanggal</th>
+                <th>Deskripsi</th>
+                <th style="width:160px">Kategori</th>
+                <th style="width:120px" class="text-end">Pemasukan</th>
+                <th style="width:120px" class="text-end">Pengeluaran</th>
+                <th style="width:110px" class="text-end">Aksi</th>
               </tr>
             </thead>
             <tbody id="transactionsBody"></tbody>
@@ -244,7 +240,7 @@
       <section id="page-grafik" class="card page d-none" style="grid-column:1/-1;">
         <div class="card p-3">
           <div class="d-flex justify-content-between align-items-center mb-2">
-            <div><h6 class="readable" style="margin:0">Tren Saldo (Detail)</h6><small class="muted-sm readable">Line chart</small></div>
+            <div><h6 style="margin:0">Tren Saldo (Detail)</h6><small class="muted-sm">Line chart</small></div>
             <div><button id="refreshLine" class="btn btn-sm btn-outline-light">Refresh</button></div>
           </div>
           <div style="min-height:320px"><canvas id="lineChartLarge"></canvas></div>
@@ -256,13 +252,13 @@
         <div class="row g-3">
           <div class="col-12 col-lg-6">
             <div class="card p-3">
-              <h6 class="readable">Komposisi Kategori</h6>
+              <h6>Komposisi Kategori</h6>
               <div style="min-height:260px"><canvas id="pieChart"></canvas></div>
             </div>
           </div>
           <div class="col-12 col-lg-6">
             <div class="card p-3">
-              <h6 class="readable">Jumlah per Kategori (Bar)</h6>
+              <h6>Jumlah per Kategori (Bar)</h6>
               <div style="min-height:260px"><canvas id="barChart"></canvas></div>
             </div>
           </div>
@@ -272,14 +268,14 @@
       <!-- PAGE: Analisis -->
       <section id="page-analisis" class="card page d-none" style="grid-column:1/-1;">
         <div class="row g-3 mb-3">
-          <div class="col-12 col-md-4"><div class="stat-card"><small class="muted-sm readable">Rata-rata Pemasukan / bulan</small><div id="avgIncome" class="stat-value readable">Rp 0</div></div></div>
-          <div class="col-12 col-md-4"><div class="stat-card"><small class="muted-sm readable">Rata-rata Pengeluaran / bulan</small><div id="avgExpense" class="stat-value readable">Rp 0</div></div></div>
-          <div class="col-12 col-md-4"><div class="stat-card"><small class="muted-sm readable">Transaksi Terbesar</small><div id="largestTx" class="stat-value readable">—</div></div></div>
+          <div class="col-12 col-md-4"><div class="stat-card"><small class="muted-sm">Rata-rata Pemasukan / bulan</small><div id="avgIncome" class="stat-value">Rp 0</div></div></div>
+          <div class="col-12 col-md-4"><div class="stat-card"><small class="muted-sm">Rata-rata Pengeluaran / bulan</small><div id="avgExpense" class="stat-value">Rp 0</div></div></div>
+          <div class="col-12 col-md-4"><div class="stat-card"><small class="muted-sm">Transaksi Terbesar</small><div id="largestTx" class="stat-value">—</div></div></div>
         </div>
 
         <div class="row g-3">
-          <div class="col-12 col-md-6"><div class="card p-3"><h6 class="readable">Top Kategori (Pengeluaran)</h6><ul id="topExpenseCats" class="list-unstyled mb-0"></ul></div></div>
-          <div class="col-12 col-md-6"><div class="card p-3"><h6 class="readable">Top Kategori (Pemasukan)</h6><ul id="topIncomeCats" class="list-unstyled mb-0"></ul></div></div>
+          <div class="col-12 col-md-6"><div class="card p-3"><h6>Top Kategori (Pengeluaran)</h6><ul id="topExpenseCats" class="list-unstyled mb-0"></ul></div></div>
+          <div class="col-12 col-md-6"><div class="card p-3"><h6>Top Kategori (Pemasukan)</h6><ul id="topIncomeCats" class="list-unstyled mb-0"></ul></div></div>
         </div>
       </section>
 
@@ -346,7 +342,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // ========== Utilities ==========
+    // Utilities
     const STORAGE_KEY = 'cashflow_data_v1';
     const $ = (s, ctx=document) => ctx.querySelector(s);
     const $$ = (s, ctx=document) => Array.from(ctx.querySelectorAll(s));
@@ -357,64 +353,49 @@
     function escapeHtml(s=''){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
     function showToast(msg, cls='bg-dark text-white'){ const c=document.querySelector('.toast-container'); const t=document.createElement('div'); t.className='toast align-items-center show '+cls; t.setAttribute('role','alert'); t.style.marginBottom='8px'; t.innerHTML=`<div class="d-flex"><div class="toast-body">${msg}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" aria-label="Close"></button></div>`; c.appendChild(t); t.querySelector('.btn-close').addEventListener('click',()=>t.remove()); setTimeout(()=>t.remove(),4200); }
 
-    // categories
+    // Categories
     const incomeCategories = ['Gaji','Pendapatan lainnya','Lainnya'];
     const expenseCategories = ['Makan / Minuman','Nongkrong','Hiburan','Kesehatan','Service','Lainnya'];
 
-    // ========== Data Model ==========
+    // Data model
     let transactions = [];
     function loadData(){ const raw = localStorage.getItem(STORAGE_KEY); if(raw){ try{ transactions = JSON.parse(raw) || []; } catch(e){ transactions = []; console.error(e); } } else { transactions = [{ id:uid(), date:formatDateISO(new Date()), description:'Gaji contoh', category:'Gaji', amount:5000000, type:'in' }, { id:uid(), date:formatDateISO(new Date()), description:'Belanja contoh', category:'Makan / Minuman', amount:350000, type:'out' }]; saveData(); } }
     function saveData(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions)); }
     function resetData(){ if(!confirm('Reset semua data?')) return; transactions = []; saveData(); renderAll(); showToast('Data direset','bg-danger text-white'); }
 
-    // ========== Rendering ==========
+    // Rendering
     const cardBalance = $('#cardBalance'), cardIncome = $('#cardIncome'), cardExpense = $('#cardExpense'), cardCount = $('#cardCount');
     const transactionsBody = $('#transactionsBody'), searchInput = $('#searchInput'), filterTime = $('#filterTime');
     const customRange = $('#customRange'), customFrom = $('#customFrom'), customTo = $('#customTo'), applyRange = $('#applyRange');
 
-    function calcSummary(list){
-      let inc=0, exp=0; for(const t of list){ if(t.type==='in') inc+=Number(t.amount)||0; else exp+=Number(t.amount)||0; } return { income:inc, expense:exp, balance:inc-exp, count:list.length };
-    }
+    function calcSummary(list){ let inc=0, exp=0; for(const t of list){ if(t.type==='in') inc+=Number(t.amount)||0; else exp+=Number(t.amount)||0; } return { income:inc, expense:exp, balance:inc-exp, count:list.length }; }
 
-    function renderSummary(filtered = transactions){
-      const s = calcSummary(filtered);
-      cardIncome.textContent = formatCurrency(s.income);
-      cardExpense.textContent = formatCurrency(s.expense);
-      cardBalance.textContent = formatCurrency(s.balance);
-      cardCount.textContent = s.count;
-      $('#cardNetLabel').textContent = s.balance >= 0 ? 'Saldo bersih' : 'Saldo negatif';
-    }
+    function renderSummary(filtered = transactions){ const s = calcSummary(filtered); cardIncome.textContent = formatCurrency(s.income); cardExpense.textContent = formatCurrency(s.expense); cardBalance.textContent = formatCurrency(s.balance); cardCount.textContent = s.count; $('#cardNetLabel').textContent = s.balance >= 0 ? 'Saldo bersih' : 'Saldo negatif'; }
 
-    function createCategoryBadge(category) {
-      return `<span class="badge-cat">${escapeHtml(category)}</span>`;
-    }
+    function createCategoryBadge(category){ return `<span class="badge-cat">${escapeHtml(category)}</span>`; }
 
     function renderTransactions(filterOpts = {}) {
       const q = (filterOpts.q || '').toLowerCase().trim();
       const time = filterOpts.time || 'all';
       const from = filterOpts.from, to = filterOpts.to;
       let list = [...transactions];
-
       if (q) list = list.filter(t => (t.description||'').toLowerCase().includes(q) || (t.category||'').toLowerCase().includes(q));
-
       const now = new Date();
-      if(time === 'today') { const today = formatDateISO(now); list = list.filter(t => t.date === today); }
+      if(time === 'today'){ const today = formatDateISO(now); list = list.filter(t => t.date === today); }
       else if(time === 'month'){ const y = now.getFullYear(), m = now.getMonth(); list = list.filter(t => { const d = new Date(t.date); return d.getFullYear() === y && d.getMonth() === m; }); }
       else if(time === 'year'){ const y = now.getFullYear(); list = list.filter(t => new Date(t.date).getFullYear() === y); }
       else if(time === 'custom' && from && to){ const fromT = new Date(from).setHours(0,0,0,0); const toT = new Date(to).setHours(23,59,59,999); list = list.filter(t => { const d = new Date(t.date).getTime(); return d >= fromT && d <= toT; }); }
-
       list.sort((a,b)=> new Date(b.date) - new Date(a.date));
       transactionsBody.innerHTML = '';
-      if(list.length === 0) {
-        transactionsBody.innerHTML = '<tr><td colspan="6"><div class="text-muted" style="padding:18px 0; text-align:center">Belum ada transaksi sesuai filter</div></td></tr>';
-      } else {
+      if(list.length === 0){ transactionsBody.innerHTML = '<tr><td colspan="6"><div class="text-muted" style="padding:18px 0; text-align:center">Belum ada transaksi sesuai filter</div></td></tr>'; }
+      else {
         for(const t of list){
           const tr = document.createElement('tr');
-          const inAmount = t.type === 'in' ? `<span class="readable">${formatCurrency(Math.abs(Number(t.amount)))}</span>` : '';
-          const outAmount = t.type === 'out' ? `<span class="readable">${formatCurrency(Math.abs(Number(t.amount)))}</span>` : '';
+          const inAmount = t.type === 'in' ? formatCurrency(Math.abs(Number(t.amount))) : '';
+          const outAmount = t.type === 'out' ? formatCurrency(Math.abs(Number(t.amount))) : '';
           tr.innerHTML = `
-            <td style="width:110px"><span class="readable">${formatDateDisplay(t.date)}</span></td>
-            <td><span class="readable">${escapeHtml(t.description)}</span></td>
+            <td style="width:110px">${formatDateDisplay(t.date)}</td>
+            <td>${escapeHtml(t.description)}</td>
             <td style="width:160px">${createCategoryBadge(t.category)}</td>
             <td class="text-end" style="width:120px">${inAmount}</td>
             <td class="text-end" style="width:120px">${outAmount}</td>
@@ -427,24 +408,18 @@
           transactionsBody.appendChild(tr);
         }
       }
-
       renderSummary(list);
       updateMiniCharts();
     }
 
-    function renderAll(){
-      renderSummary(transactions);
-      renderTransactions({ q: searchInput.value, time: filterTime.value, from: customFrom.value, to: customTo.value });
-      updateCharts();
-      updateAnalysis();
-    }
+    function renderAll(){ renderSummary(transactions); renderTransactions({ q: searchInput.value, time: filterTime.value, from: customFrom.value, to: customTo.value }); updateCharts(); updateAnalysis(); }
 
-    // ========== CRUD ==========
+    // CRUD
     function addTransaction(tx){ tx.id = uid(); transactions.push(tx); saveData(); renderAll(); showToast('Transaksi disimpan','bg-success text-white'); }
     function updateTransaction(id, data){ const idx = transactions.findIndex(t => t.id === id); if(idx === -1) return; transactions[idx] = { ...transactions[idx], ...data }; saveData(); renderAll(); showToast('Perubahan disimpan','bg-success text-white'); }
     function deleteTransaction(id){ if(!confirm('Hapus transaksi ini?')) return; transactions = transactions.filter(t => t.id !== id); saveData(); renderAll(); showToast('Transaksi dihapus','bg-danger text-white'); }
 
-    // ========== Modal & Category handling ==========
+    // Modal & categories
     const modal = new bootstrap.Modal($('#modalForm'));
     const modalTitle = $('#modalTitle'), formTransaction = $('#formTransaction');
     const txTypeEl = $('#txType'), txCategoryEl = $('#txCategory'), txCategoryCustom = $('#txCategoryCustom');
@@ -494,7 +469,7 @@
       modal.hide();
     });
 
-    // ========== Filters & Search ==========
+    // Filters & search
     filterTime.addEventListener('change', () => {
       if(filterTime.value === 'custom') customRange.classList.remove('d-none');
       else { customRange.classList.add('d-none'); renderTransactions({ q: searchInput.value, time: filterTime.value, from: customFrom.value, to: customTo.value }); }
@@ -507,7 +482,7 @@
     $('#btnShowAll').addEventListener('click', () => { searchInput.value=''; filterTime.value='all'; customRange.classList.add('d-none'); renderTransactions({ q:'', time:'all' }); });
     $('#btnClearAll').addEventListener('click', resetData);
 
-    // ========== Charts & Mini charts ==========
+    // Charts
     let lineChart = null, pieChart = null, barChart = null, miniLine = null, miniPie = null;
     const lineCtx = $('#lineChartLarge'), pieCtx = $('#pieChart'), barCtx = $('#barChart');
     const miniLineCtx = $('#miniLine'), miniPieCtx = $('#miniPie');
@@ -537,16 +512,13 @@
       const labels = lineAgg.labels.map(d => (new Date(d)).toLocaleDateString('id-ID'));
       const data = lineAgg.data;
 
-      // large line
       if(lineChart){ lineChart.data.labels = labels; lineChart.data.datasets[0].data = data; lineChart.update(); }
       else if(lineCtx){ lineChart = new Chart(lineCtx, { type:'line', data:{ labels, datasets:[{ label:'Saldo (Rp)', data, borderColor:'#5b9df9', backgroundColor:'rgba(91,157,249,0.12)', fill:true, tension:0.28 }] }, options:{ responsive:true, plugins:{ legend:{display:false}, tooltip:{callbacks:{ label: ctx => formatCurrency(ctx.parsed.y) } } }, scales:{ y:{ ticks:{ callback: v => formatCurrency(v) } }, x:{ ticks:{ autoSkip:true, maxTicksLimit:12 } } }, maintainAspectRatio:false } }); }
 
-      // pie
       const catAgg = aggregateForCategories();
       if(pieChart){ pieChart.data.labels = catAgg.labels; pieChart.data.datasets[0].data = catAgg.data; pieChart.update(); }
       else if(pieCtx){ pieChart = new Chart(pieCtx, { type:'doughnut', data:{ labels:catAgg.labels, datasets:[{ data:catAgg.data, backgroundColor: generateColors(catAgg.labels.length) }] }, options:{ plugins:{ tooltip:{callbacks:{ label:ctx=>`${ctx.label}: ${formatCurrency(ctx.parsed)}`}}}, cutout:'60%', maintainAspectRatio:false } }); }
 
-      // bar
       if(barChart){ barChart.data.labels = catAgg.labels; barChart.data.datasets[0].data = catAgg.data; barChart.update(); }
       else if(barCtx){ barChart = new Chart(barCtx, { type:'bar', data:{ labels:catAgg.labels, datasets:[{ label:'Jumlah (Rp)', data:catAgg.data, backgroundColor: generateColors(catAgg.labels.length) }] }, options:{ indexAxis:'y', responsive:true, plugins:{ legend:{display:false}, tooltip:{callbacks:{ label: ctx => formatCurrency(ctx.parsed.y) } } }, maintainAspectRatio:false } }); }
     }
@@ -564,16 +536,13 @@
       else if(miniPieCtx){ miniPie = new Chart(miniPieCtx, { type:'doughnut', data:{ labels:catAgg.labels, datasets:[{ data:catAgg.data, backgroundColor: generateColors(catAgg.labels.length), borderWidth:0 }] }, options:{ plugins:{legend:{display:false}}, cutout:'70%', maintainAspectRatio:false } }); }
     }
 
-    // ========== Analysis ==========
+    // Analysis
     function updateAnalysis(){
       if(transactions.length === 0){
         $('#avgIncome').textContent = 'Rp 0'; $('#avgExpense').textContent = 'Rp 0'; $('#largestTx').textContent = '—'; $('#topExpenseCats').innerHTML = '<li class="text-muted">-</li>'; $('#topIncomeCats').innerHTML = '<li class="text-muted">-</li>'; return;
       }
       const mapInc = {}, mapExp = {};
-      for(const t of transactions){
-        const d = new Date(t.date); const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-        if(t.type==='in') mapInc[key] = (mapInc[key]||0) + Number(t.amount); else mapExp[key] = (mapExp[key]||0) + Number(t.amount);
-      }
+      for(const t of transactions){ const d = new Date(t.date); const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; if(t.type==='in') mapInc[key] = (mapInc[key]||0) + Number(t.amount); else mapExp[key] = (mapExp[key]||0) + Number(t.amount); }
       const avgInc = Object.values(mapInc).reduce((a,b)=>a+b,0) / Math.max(1, Object.keys(mapInc).length);
       const avgExp = Object.values(mapExp).reduce((a,b)=>a+b,0) / Math.max(1, Object.keys(mapExp).length);
       $('#avgIncome').textContent = formatCurrency(Math.round(avgInc));
@@ -584,11 +553,11 @@
       for(const t of transactions){ if(t.type==='in') incCats[t.category] = (incCats[t.category]||0)+Number(t.amount); else expCats[t.category] = (expCats[t.category]||0)+Number(t.amount); }
       const topExp = Object.entries(expCats).sort((a,b)=>b[1]-a[1]).slice(0,5);
       const topInc = Object.entries(incCats).sort((a,b)=>b[1]-a[1]).slice(0,5);
-      $('#topExpenseCats').innerHTML = topExp.map(([k,v])=>`<li style="padding:.28rem 0"><span class="readable">${escapeHtml(k)}</span><span class="text-muted" style="float:right">${formatCurrency(v)}</span></li>`).join('') || '<li class="text-muted">-</li>';
-      $('#topIncomeCats').innerHTML = topInc.map(([k,v])=>`<li style="padding:.28rem 0"><span class="readable">${escapeHtml(k)}</span><span class="text-muted" style="float:right">${formatCurrency(v)}</span></li>`).join('') || '<li class="text-muted">-</li>';
+      $('#topExpenseCats').innerHTML = topExp.map(([k,v])=>`<li style="padding:.28rem 0">${escapeHtml(k)} <span class="text-muted" style="float:right">${formatCurrency(v)}</span></li>`).join('') || '<li class="text-muted">-</li>';
+      $('#topIncomeCats').innerHTML = topInc.map(([k,v])=>`<li style="padding:.28rem 0">${escapeHtml(k)} <span class="text-muted" style="float:right">${formatCurrency(v)}</span></li>`).join('') || '<li class="text-muted">-</li>';
     }
 
-    // ========== Import / Export & PDF ==========
+    // Import / Export / PDF
     const fileInput = $('#fileInput');
     $('#btnImportCSV').addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', handleFileSelect);
@@ -605,7 +574,7 @@
             transactions.push(tx); imported++;
           }
           if(imported > 0){ saveData(); renderAll(); showToast('Berhasil mengimpor ' + imported + ' transaksi', 'bg-success text-white'); } else showToast('Tidak ada data valid yang diimpor', 'bg-warning text-dark');
-        } catch(err){ showToast('Gagal mengimpor CSV', 'bg-danger text-white'); console.error(err); }
+        } catch(err){ showToast('Gagal mengimpor CSV','bg-danger text-white'); console.error(err); }
       };
       reader.readAsText(f, 'utf-8'); fileInput.value = '';
     }
@@ -651,39 +620,23 @@
       } catch(err){ showToast('Gagal membuat PDF','bg-danger text-white'); console.error(err); }
     });
 
-    // ========== Routing (single-file pages with transitions) ==========
+    // Routing w/ transitions
     const pages = ['history','grafik','chart','analisis'];
     let currentPage = null;
-
     function showPage(page){
       if(page === currentPage) return;
       const prev = currentPage ? document.getElementById('page-' + currentPage) : null;
       const next = document.getElementById('page-' + page);
-      // mark nav buttons
       $$('.page-btn').forEach(b => b.classList.remove('active-page'));
       const activeBtn = $(`.page-btn[data-page="${page}"]`);
       if(activeBtn) activeBtn.classList.add('active-page');
-
-      // if there's a previous visible page, animate hiding
       if(prev){
-        prev.classList.remove('showing');
-        prev.classList.add('hiding');
-        // after animation, hide it
-        const onPrevEnd = () => {
-          prev.classList.remove('hiding');
-          prev.classList.add('d-none');
-          prev.removeEventListener('transitionend', onPrevEnd);
-        };
+        prev.classList.remove('showing'); prev.classList.add('hiding');
+        const onPrevEnd = () => { prev.classList.remove('hiding'); prev.classList.add('d-none'); prev.removeEventListener('transitionend', onPrevEnd); };
         prev.addEventListener('transitionend', onPrevEnd);
       }
-
-      // show next with enter animation
       if(next){
-        next.classList.remove('d-none');
-        // force reflow to ensure transition triggers
-        void next.offsetWidth;
-        next.classList.add('showing');
-        // ensure Chart.js redraw/resizes after show
+        next.classList.remove('d-none'); void next.offsetWidth; next.classList.add('showing');
         setTimeout(() => {
           if(page === 'grafik' && lineChart) lineChart.resize();
           if(page === 'chart'){ if(pieChart) pieChart.resize(); if(barChart) barChart.resize(); }
@@ -691,54 +644,29 @@
           if(page === 'history') renderTransactions({ q: searchInput.value, time: filterTime.value, from: customFrom.value, to: customTo.value });
         }, 260);
       }
-
-      currentPage = page;
-      history.replaceState(null, '', '#' + page);
+      currentPage = page; history.replaceState(null, '', '#' + page);
     }
-
     $$('.page-btn').forEach(b => b.addEventListener('click', () => showPage(b.dataset.page)));
 
-    // ========== Init & Events ==========
+    // Init
     function init(){
-      loadData();
-      populateCategoryOptions('out');
-      renderAll();
-
-      // set initial page
+      loadData(); populateCategoryOptions('out'); renderAll();
       const startHash = (location.hash || '').replace('#','') || 'history';
       showPage(pages.includes(startHash) ? startHash : 'history');
-
-      // FAB & header add
       $('#fabAdd').addEventListener('click', openAddModal);
       $('#btnAddHeader').addEventListener('click', openAddModal);
-
-      // delegate edit/delete
-      document.body.addEventListener('click', function(e){
-        const edit = e.target.closest('.btn-edit'); const del = e.target.closest('.btn-delete');
-        if(edit) openEditModal(edit.dataset.id); if(del) deleteTransaction(del.dataset.id);
-      });
-
-      // charts refresh handlers
+      document.body.addEventListener('click', function(e){ const edit = e.target.closest('.btn-edit'); const del = e.target.closest('.btn-delete'); if(edit) openEditModal(edit.dataset.id); if(del) deleteTransaction(del.dataset.id); });
       $('#btnRefreshCharts').addEventListener('click', () => { updateCharts(); updateMiniCharts(); showToast('Charts diperbarui','bg-dark text-white'); });
       $('#refreshLine').addEventListener('click', () => { updateCharts(); showToast('Grafik diperbarui','bg-dark text-white'); });
-
-      // import button already wired to file input
-
-      // keyboard shortcut
+      $('#btnImportCSV').addEventListener('click', () => fileInput.click());
       document.addEventListener('keydown', (e) => { if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'n'){ e.preventDefault(); openAddModal(); } });
-
-      // observe mini charts to initialize
       const obs = new IntersectionObserver(entries => { entries.forEach(en => { if(en.isIntersecting) { updateMiniCharts(); } }); }, { threshold: 0.2 });
       const miniLC = document.getElementById('miniLineCard'); if(miniLC) obs.observe(miniLC);
       const miniPC = document.getElementById('miniPieCard'); if(miniPC) obs.observe(miniPC);
     }
-
     init();
 
-    // safety
-    window.addEventListener('beforeunload', (e) => { if(document.querySelector('.modal.show')) { e.preventDefault(); e.returnValue = ''; } });
-
-    // debounce util
+    // helpers
     function debounce(fn, wait = 200){ let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, args), wait); }; }
   </script>
 </body>
