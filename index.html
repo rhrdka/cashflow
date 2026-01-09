@@ -1,9 +1,9 @@
 <!doctype html>
 <html lang="id">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Cashflow - Dashboard</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cashflow — Dashboard Modern</title>
 
   <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -17,198 +17,272 @@
 
   <style>
     :root{
-      --bs-primary: #0d6efd;
-      --card-radius: 12px;
+      --bg: #0f1724; /* dark-blue background */
+      --card-bg: rgba(255,255,255,0.04);
+      --glass: rgba(255,255,255,0.03);
+      --surface: #ffffff;
+      --muted: #98a0b3;
+      --accent: #5b9df9;
+      --success: #28c76f;
+      --danger: #ff6b6b;
+      --radius: 14px;
     }
-    body { background: #f5f7fb; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
-    .card { border-radius: var(--card-radius); box-shadow: 0 6px 18px rgba(15,23,42,0.06); }
-    .muted-sm { color: #6c757d; font-size: .9rem; }
-    .balance { font-weight:700; font-size:1.5rem; letter-spacing: .2px; }
-    .table-sm td, .table-sm th { padding: .45rem; vertical-align: middle; }
-    .category-badge { font-size: .78rem; padding: .25rem .45rem; border-radius: 8px; }
-    .chart-card { min-height: 260px; }
-    .no-data { color:#6c757d; text-align:center; padding: 2rem 0; }
-    @media (max-width: 767px){
-      .chart-card { min-height: 220px; }
+    /* Page */
+    html,body { height:100%; }
+    body {
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, rgba(11,22,40,1) 0%, rgba(6,10,20,1) 100%);
+      color: #e6eef8;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding-bottom:48px;
     }
+    /* container */
+    .container-main { max-width:1200px; margin:28px auto; padding:24px; }
+    /* Header */
+    .topbar {
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px; margin-bottom:20px;
+    }
+    .brand {
+      display:flex; align-items:center; gap:12px;
+    }
+    .logo {
+      width:48px; height:48px; border-radius:12px;
+      background: linear-gradient(135deg,var(--accent), #8ad6ff);
+      display:flex; align-items:center; justify-content:center;
+      box-shadow: 0 8px 30px rgba(91,157,249,0.12);
+      font-weight:700; color:#042a5a;
+    }
+    .brand h1 { margin:0; font-size:1.05rem; letter-spacing:0.2px; color:#f7fbff; }
+    .brand small { display:block; color:var(--muted); font-size:.78rem; margin-top:2px; }
+
+    /* Card grid */
+    .grid { display:grid; gap:18px; grid-template-columns: repeat(12, 1fr); }
+    .card { background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02)); border: 1px solid rgba(255,255,255,0.04); color:inherit; border-radius:var(--radius); transition: transform .26s cubic-bezier(.2,.9,.2,1), box-shadow .26s; padding:16px; }
+    .card:hover { transform: translateY(-6px); box-shadow: 0 18px 45px rgba(2,6,23,0.55); }
+
+    .card-1 { grid-column: span 3; }
+    .card-2 { grid-column: span 3; }
+    .card-3 { grid-column: span 3; }
+    .card-4 { grid-column: span 3; }
+
+    .muted-sm { color:var(--muted); font-size:.85rem; }
+    .balance { font-weight:700; font-size:1.35rem; letter-spacing:.2px; color:#fff; }
+    .icon-circle { width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#052036; font-size:1.2rem; }
+
+    /* Charts area */
+    .charts { display:grid; grid-template-columns: 2fr 1fr; gap:18px; margin-top:12px; }
+    .chart-card { min-height:240px; display:flex; flex-direction:column; gap:8px; }
+
+    /* transactions card */
+    .transactions-card { margin-top:18px; grid-column: 1 / -1; padding:12px; }
+
+    /* table visuals */
+    table { color:inherit; }
+    .badge-cat { font-size:.78rem; padding:.28rem .5rem; border-radius: 10px; background: rgba(255,255,255,0.03); color:var(--muted); border:1px solid rgba(255,255,255,0.02); }
+
+    /* subtle animations */
+    @keyframes floaty {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+      100% { transform: translateY(0px); }
+    }
+    .float { animation: floaty 6s ease-in-out infinite; }
+
+    @keyframes enterUp {
+      0% { opacity:0; transform: translateY(10px) scale(.995); }
+      100% { opacity:1; transform: translateY(0) scale(1); }
+    }
+    .enter { animation: enterUp .42s cubic-bezier(.2,.9,.2,1); }
+
+    /* table row appear */
+    .row-enter { animation: enterUp .42s cubic-bezier(.2,.9,.2,1); }
+
+    /* small controls */
+    .controls { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+
+    /* modal design overrides */
+    .modal-content { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:12px; border: 1px solid rgba(255,255,255,0.04); color:inherit; }
+    .form-control, .form-select { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); color:inherit; }
+
+    /* responsive */
+    @media (max-width: 991px) {
+      .charts { grid-template-columns: 1fr; }
+      .card-1, .card-2, .card-3, .card-4 { grid-column: span 6; }
+    }
+    @media (max-width: 640px) {
+      .card-1, .card-2, .card-3, .card-4 { grid-column: span 12; }
+      .container-main { padding:12px; margin:12px; }
+    }
+
+    /* toast */
+    .toast-container { position: fixed; right: 18px; top: 18px; z-index: 1100; }
+
+    /* subtle ripple on buttons */
+    .btn { transition: transform .12s, box-shadow .12s; }
+    .btn:active { transform: translateY(1px) scale(.997); }
+
+    /* micro animation for currency change */
+    .number-change { transition: all .6s cubic-bezier(.2,.9,.2,1); }
+
   </style>
 </head>
 <body>
-  <!-- NAVBAR -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
-    <div class="container-fluid">
-      <a class="navbar-brand fw-semibold" href="#">Cashflow</a>
-      <div class="d-flex align-items-center gap-2">
-        <button id="btnExportPDF" class="btn btn-outline-secondary btn-sm me-2" title="Export PDF"><i class="bi bi-file-earmark-pdf"></i> PDF</button>
-        <button id="btnExportCSV" class="btn btn-outline-success btn-sm me-2" title="Export CSV"><i class="bi bi-file-earmark-arrow-down"></i> CSV</button>
-        <button id="btnImportCSV" class="btn btn-outline-primary btn-sm" title="Import CSV"><i class="bi bi-file-earmark-arrow-up"></i> Import</button>
+  <div class="container-main">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo float"><i class="bi bi-cash-stack" style="font-size:1.15rem"></i></div>
+        <div>
+          <h1>Cashflow</h1>
+          <small>Dashboard modern — ringkas & interaktif</small>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button id="btnExportPDF" class="btn btn-outline-light btn-sm" title="Export PDF"><i class="bi bi-file-earmark-pdf"></i> PDF</button>
+        <button id="btnExportCSV" class="btn btn-outline-light btn-sm" title="Export CSV"><i class="bi bi-file-earmark-arrow-down"></i> CSV</button>
+        <button id="btnImportCSV" class="btn btn-outline-light btn-sm" title="Import CSV"><i class="bi bi-file-earmark-arrow-up"></i> Import</button>
         <button id="btnAdd" class="btn btn-primary btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#modalForm"><i class="bi bi-plus-lg"></i> Tambah</button>
       </div>
     </div>
-  </nav>
 
-  <main class="container my-4">
-    <div id="dashboardArea">
-      <!-- Summary cards -->
-      <div class="row g-3">
-        <div class="col-12 col-md-6 col-xl-3">
-          <div class="card p-3">
-            <div class="d-flex justify-content-between align-items-start">
-              <div>
-                <div class="muted-sm">Saldo</div>
-                <div id="cardBalance" class="balance">Rp 0</div>
-                <div id="cardNetLabel" class="muted-sm">Total</div>
-              </div>
-              <div class="text-end">
-                <i class="bi bi-wallet2 fs-3 text-primary"></i>
-              </div>
-            </div>
+    <div class="grid">
+      <div class="card card-1 enter">
+        <div class="d-flex justify-content-between">
+          <div>
+            <div class="muted-sm">Saldo</div>
+            <div id="cardBalance" class="balance number-change">Rp 0</div>
+            <div id="cardNetLabel" class="muted-sm">Total</div>
           </div>
-        </div>
-        <div class="col-12 col-md-6 col-xl-3">
-          <div class="card p-3">
-            <div class="d-flex justify-content-between align-items-start">
-              <div>
-                <div class="muted-sm">Pemasukan</div>
-                <div id="cardIncome" class="balance text-success">Rp 0</div>
-                <div class="muted-sm">Total pemasukan</div>
-              </div>
-              <div class="text-end">
-                <i class="bi bi-cash-stack fs-3 text-success"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-12 col-md-6 col-xl-3">
-          <div class="card p-3">
-            <div class="d-flex justify-content-between align-items-start">
-              <div>
-                <div class="muted-sm">Pengeluaran</div>
-                <div id="cardExpense" class="balance text-danger">Rp 0</div>
-                <div class="muted-sm">Total pengeluaran</div>
-              </div>
-              <div class="text-end">
-                <i class="bi bi-credit-card-2-back fs-3 text-danger"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-12 col-md-6 col-xl-3">
-          <div class="card p-3">
-            <div class="d-flex justify-content-between align-items-start">
-              <div>
-                <div class="muted-sm">Transaksi</div>
-                <div id="cardCount" class="balance">0</div>
-                <div class="muted-sm">Total transaksi</div>
-              </div>
-              <div class="text-end">
-                <i class="bi bi-list-check fs-3 text-muted"></i>
-              </div>
-            </div>
-          </div>
+          <div class="icon-circle" style="background:linear-gradient(135deg,#e6f0ff, #cfe9ff);"><i class="bi bi-wallet2"></i></div>
         </div>
       </div>
 
-      <!-- Charts -->
-      <div class="row my-3 g-3">
-        <div class="col-12 col-lg-8">
-          <div class="card p-3 chart-card">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <div>
-                <h6 class="mb-0">Tren Saldo</h6>
-                <small class="muted-sm">Per hari (7/30/90 hari pilihan)</small>
-              </div>
-              <div class="d-flex align-items-center gap-2">
-                <select id="trendRange" class="form-select form-select-sm">
-                  <option value="7">7 Hari</option>
-                  <option value="30" selected>30 Hari</option>
-                  <option value="90">90 Hari</option>
-                  <option value="365">1 Tahun</option>
-                  <option value="all">Semua</option>
-                </select>
-              </div>
-            </div>
+      <div class="card card-2 enter">
+        <div class="d-flex justify-content-between">
+          <div>
+            <div class="muted-sm">Pemasukan</div>
+            <div id="cardIncome" class="balance text-success number-change">Rp 0</div>
+            <div class="muted-sm">Total pemasukan</div>
+          </div>
+          <div class="icon-circle" style="background:linear-gradient(135deg,#e9fbf0,#bff6da)"><i class="bi bi-cash-stack text-success"></i></div>
+        </div>
+      </div>
+
+      <div class="card card-3 enter">
+        <div class="d-flex justify-content-between">
+          <div>
+            <div class="muted-sm">Pengeluaran</div>
+            <div id="cardExpense" class="balance text-danger number-change">Rp 0</div>
+            <div class="muted-sm">Total pengeluaran</div>
+          </div>
+          <div class="icon-circle" style="background:linear-gradient(135deg,#fff0f0,#ffdede)"><i class="bi bi-credit-card-2-back text-danger"></i></div>
+        </div>
+      </div>
+
+      <div class="card card-4 enter">
+        <div class="d-flex justify-content-between">
+          <div>
+            <div class="muted-sm">Transaksi</div>
+            <div id="cardCount" class="balance number-change">0</div>
+            <div class="muted-sm">Total transaksi</div>
+          </div>
+          <div class="icon-circle" style="background:linear-gradient(135deg,#faf7ff,#e9deff)"><i class="bi bi-list-check"></i></div>
+        </div>
+      </div>
+
+      <!-- charts -->
+      <div class="chart-card card charts enter" style="grid-column: 1 / -1;">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h6 style="margin:0">Tren Saldo</h6>
+            <small class="muted-sm">Per hari — data waktu nyata</small>
+          </div>
+          <div class="d-flex gap-2 align-items-center">
+            <select id="trendRange" class="form-select form-select-sm" style="width:120px">
+              <option value="7">7 Hari</option>
+              <option value="30" selected>30 Hari</option>
+              <option value="90">90 Hari</option>
+              <option value="365">1 Tahun</option>
+              <option value="all">Semua</option>
+            </select>
+            <button id="btnRefreshCharts" class="btn btn-outline-light btn-sm" title="Refresh"><i class="bi bi-arrow-clockwise"></i></button>
+          </div>
+        </div>
+        <div style="display:flex; gap:18px; margin-top:12px; align-items:stretch;">
+          <div style="flex:2; min-height:260px;" class="card p-3" id="lineChartCard">
             <canvas id="lineChart" style="max-height:320px"></canvas>
           </div>
-        </div>
-
-        <div class="col-12 col-lg-4">
-          <div class="card p-3 chart-card">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <div>
-                <h6 class="mb-0">Komposisi Kategori</h6>
-                <small class="muted-sm">Pemasukan vs Pengeluaran per kategori</small>
-              </div>
-              <div>
-                <button id="btnRefreshCharts" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-clockwise"></i></button>
-              </div>
-            </div>
-            <canvas id="pieChart" style="max-height:260px"></canvas>
+          <div style="flex:1; min-height:260px;" class="card p-3" id="pieChartCard">
+            <canvas id="pieChart" style="max-height:320px"></canvas>
           </div>
         </div>
       </div>
 
-      <!-- Controls + History -->
-      <div class="row g-3">
-        <div class="col-12">
-          <div class="card p-3">
-            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-3">
-              <div class="d-flex gap-2 align-items-center">
-                <div class="input-group input-group-sm">
-                  <span class="input-group-text"><i class="bi bi-search"></i></span>
-                  <input id="searchInput" type="text" class="form-control" placeholder="Cari deskripsi atau kategori...">
-                </div>
-                <select id="filterTime" class="form-select form-select-sm w-auto">
-                  <option value="all" selected>Semua</option>
-                  <option value="today">Hari ini</option>
-                  <option value="month">Bulan ini</option>
-                  <option value="year">Tahun ini</option>
-                  <option value="custom">Rentang...</option>
-                </select>
-                <div id="customRange" class="d-none d-flex gap-2 align-items-center">
-                  <input id="customFrom" type="date" class="form-control form-control-sm">
-                  <input id="customTo" type="date" class="form-control form-control-sm">
-                  <button id="applyRange" class="btn btn-sm btn-outline-primary">Terapkan</button>
-                </div>
-              </div>
-
-              <div class="d-flex gap-2">
-                <button id="btnClearAll" class="btn btn-outline-danger btn-sm">Reset Data</button>
-                <button id="btnShowAll" class="btn btn-outline-secondary btn-sm">Tampilkan Semua</button>
-              </div>
+      <!-- controls & history -->
+      <div class="card transactions-card enter" style="grid-column: 1 / -1;">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-3">
+          <div class="d-flex gap-2 align-items-center" style="flex:1">
+            <div class="input-group input-group-sm" style="max-width:420px;">
+              <span class="input-group-text bg-transparent border-0 text-muted"><i class="bi bi-search"></i></span>
+              <input id="searchInput" type="text" class="form-control form-control-sm" placeholder="Cari deskripsi atau kategori...">
             </div>
 
-            <div class="table-responsive">
-              <table class="table table-sm table-hover align-middle" id="transactionsTable">
-                <thead class="table-light">
-                  <tr>
-                    <th style="width:120px">Tanggal</th>
-                    <th>Deskripsi</th>
-                    <th style="width:140px">Kategori</th>
-                    <th style="width:120px" class="text-end">Jumlah</th>
-                    <th style="width:120px" class="text-center">Tipe</th>
-                    <th style="width:110px" class="text-end">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody id="transactionsBody">
-                  <!-- rows -->
-                </tbody>
-              </table>
-            </div>
+            <select id="filterTime" class="form-select form-select-sm" style="width:160px;">
+              <option value="all" selected>Semua</option>
+              <option value="today">Hari ini</option>
+              <option value="month">Bulan ini</option>
+              <option value="year">Tahun ini</option>
+              <option value="custom">Rentang...</option>
+            </select>
 
+            <div id="customRange" class="d-none d-flex gap-2 align-items-center">
+              <input id="customFrom" type="date" class="form-control form-control-sm">
+              <input id="customTo" type="date" class="form-control form-control-sm">
+              <button id="applyRange" class="btn btn-sm btn-outline-light">Terapkan</button>
+            </div>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button id="btnClearAll" class="btn btn-sm btn-outline-danger">Reset Data</button>
+            <button id="btnShowAll" class="btn btn-sm btn-outline-light">Tampilkan Semua</button>
           </div>
         </div>
-      </div>
-    </div> <!-- /dashboardArea -->
-  </main>
 
-  <!-- Modal: Add / Edit Transaction -->
+        <div class="table-responsive" style="max-height:420px; overflow:auto;">
+          <table class="table table-borderless table-hover align-middle mb-0">
+            <thead>
+              <tr class="text-muted" style="font-size:.85rem;">
+                <th style="width:120px">Tanggal</th>
+                <th>Deskripsi</th>
+                <th style="width:160px">Kategori</th>
+                <th style="width:140px" class="text-end">Jumlah</th>
+                <th style="width:120px" class="text-center">Tipe</th>
+                <th style="width:110px" class="text-end">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="transactionsBody">
+              <!-- rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- hidden file input -->
+    <input id="fileInput" type="file" accept=".csv" class="d-none">
+
+  </div>
+
+  <!-- Modal Add/Edit -->
   <div class="modal fade" id="modalForm" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <form id="formTransaction" class="modal-content">
-        <div class="modal-header">
+        <div class="modal-header border-0">
           <h5 class="modal-title" id="modalTitle">Tambah Transaksi</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
         </div>
         <div class="modal-body">
           <input type="hidden" id="txId">
@@ -218,7 +292,7 @@
           </div>
           <div class="mb-2">
             <label class="form-label">Deskripsi</label>
-            <input id="txDesc" class="form-control" type="text" placeholder="Contoh: Gaji, Belanja, .." required>
+            <input id="txDesc" class="form-control" type="text" placeholder="Contoh: Gaji, Belanja..." required>
           </div>
           <div class="mb-2">
             <label class="form-label">Kategori</label>
@@ -235,26 +309,26 @@
               <option value="out" selected>Pengeluaran</option>
             </select>
           </div>
-          <div class="form-text">Jumlah harus positif. Untuk pengeluaran pilih tipe "Pengeluaran".</div>
+          <div class="form-text muted-sm">Jumlah harus positif. Untuk pengeluaran pilih tipe "Pengeluaran".</div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
-          <button type="submit" class="btn btn-primary btn-sm">Simpan</button>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-sm btn-outline-light" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-sm btn-primary">Simpan</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Hidden file input for import -->
-  <input id="fileInput" type="file" accept=".csv" class="d-none">
+  <!-- Toast container -->
+  <div class="toast-container position-fixed top-0 end-0 p-3"></div>
 
   <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // ====== Konfigurasi & Util ======
+    /* =================== Konfigurasi & Utility =================== */
     const STORAGE_KEY = 'cashflow_data_v1';
-    const VERSION = '1';
-    const $ = (sel, ctx = document) => ctx.querySelector(sel);
-    const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
+    const $ = (sel, ctx=document) => ctx.querySelector(sel);
+    const $$ = (sel, ctx=document) => Array.from(ctx.querySelectorAll(sel));
 
     function formatCurrency(value) {
       const v = Number(value) || 0;
@@ -274,39 +348,60 @@
       return d.toLocaleDateString('id-ID');
     }
     function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+    function escapeHtml(s=''){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
 
-    // ====== Data Model ======
+    /* toast helper */
+    function showToast(message, cls='bg-dark text-white') {
+      const container = document.querySelector('.toast-container');
+      const toastEl = document.createElement('div');
+      toastEl.className = 'toast align-items-center show ' + cls;
+      toastEl.setAttribute('role','alert');
+      toastEl.innerHTML = `<div class="d-flex">
+        <div class="toast-body">${message}</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" aria-label="Close"></button>
+      </div>`;
+      container.appendChild(toastEl);
+      toastEl.querySelector('.btn-close').addEventListener('click', () => toastEl.remove());
+      setTimeout(() => { toastEl.remove(); }, 4200);
+    }
+
+    /* animate numeric value */
+    function animateValue(el, start, end, duration = 700) {
+      if (!el) return;
+      start = Number(start) || 0;
+      end = Number(end) || 0;
+      const diff = end - start;
+      const startTime = performance.now();
+      function step(now) {
+        const t = Math.min(1, (now - startTime) / duration);
+        const ease = t < .5 ? 2*t*t : -1 + (4 - 2*t)*t; // easeInOutQuad-ish
+        const current = Math.round(start + diff * ease);
+        el.textContent = formatCurrency(current);
+        if (t < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    /* =================== Data Model =================== */
     let transactions = [];
-    // load initial data if none
     function loadData() {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
-        try {
-          transactions = JSON.parse(raw) || [];
-        } catch(e) {
-          transactions = [];
-          console.error('Gagal mem-parse data localStorage, reset.', e);
-        }
+        try { transactions = JSON.parse(raw) || []; }
+        catch(e){ transactions = []; console.error('Parse error localStorage:', e); }
       } else {
-        // contoh data awal (opsional) - hapus/ubah jika tidak perlu
+        // contoh data
         transactions = [
-          { id: uid(), date: formatDateISO(new Date()), description: 'Pendapatan contoh', category: 'Gaji', amount: 5000000, type: 'in' },
-          { id: uid(), date: formatDateISO(new Date()), description: 'Belanja bulanan', category: 'Belanja', amount: 750000, type: 'out' }
+          { id: uid(), date: formatDateISO(new Date()), description: 'Gaji bulan ini', category: 'Gaji', amount: 6500000, type: 'in' },
+          { id: uid(), date: formatDateISO(new Date()), description: 'Belanja bulanan', category: 'Belanja', amount: 1250000, type: 'out' }
         ];
         saveData();
       }
     }
-    function saveData() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
-    }
-    function resetData() {
-      if (!confirm('Reset semua data? Tindakan ini tidak dapat dibatalkan.')) return;
-      transactions = [];
-      saveData();
-      renderAll();
-    }
+    function saveData(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions)); }
+    function resetData(){ if (!confirm('Reset semua data? Tindakan ini tidak dapat dibatalkan.')) return; transactions=[]; saveData(); renderAll(); showToast('Data berhasil direset', 'bg-danger text-white'); }
 
-    // ====== Rendering ======
+    /* =================== Rendering =================== */
     const cardBalance = $('#cardBalance');
     const cardIncome = $('#cardIncome');
     const cardExpense = $('#cardExpense');
@@ -318,8 +413,6 @@
     const customFrom = $('#customFrom');
     const customTo = $('#customTo');
     const applyRange = $('#applyRange');
-    const btnShowAll = $('#btnShowAll');
-    const btnClearAll = $('#btnClearAll');
 
     function calcSummary(list) {
       let income = 0, expense = 0;
@@ -332,19 +425,28 @@
 
     function renderSummary(filtered = transactions) {
       const s = calcSummary(filtered);
-      cardIncome.textContent = formatCurrency(s.income);
-      cardExpense.textContent = formatCurrency(s.expense);
-      cardBalance.textContent = formatCurrency(s.balance);
-      cardCount.textContent = s.count;
+      // animate numbers
+      const prevIncome = parseInt((cardIncome.dataset.val) || 0, 10);
+      const prevExpense = parseInt((cardExpense.dataset.val) || 0, 10);
+      const prevBalance = parseInt((cardBalance.dataset.val) || 0, 10);
+      const prevCount = parseInt((cardCount.dataset.val) || 0, 10);
+
+      animateValue(cardIncome, prevIncome, s.income, 700);
+      animateValue(cardExpense, prevExpense, s.expense, 700);
+      animateValue(cardBalance, prevBalance, s.balance, 700);
+      // count (simple)
+      cardCount.classList.add('number-change');
+      setTimeout(()=> cardCount.textContent = s.count, 220);
+      // save current
+      cardIncome.dataset.val = Math.round(s.income);
+      cardExpense.dataset.val = Math.round(s.expense);
+      cardBalance.dataset.val = Math.round(s.balance);
+      cardCount.dataset.val = s.count;
       $('#cardNetLabel').textContent = s.balance >= 0 ? 'Saldo bersih' : 'Saldo negatif';
     }
 
     function createCategoryBadge(category) {
-      return `<span class="badge bg-light text-truncate category-badge" title="${category}">${escapeHtml(category)}</span>`;
-    }
-
-    function escapeHtml(s='') {
-      return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+      return `<span class="badge-cat" title="${escapeHtml(category)}">${escapeHtml(category)}</span>`;
     }
 
     function renderTransactions(filterOpts = {}) {
@@ -380,47 +482,33 @@
         });
       }
 
-      // sort desc by date
       list.sort((a,b) => new Date(b.date) - new Date(a.date));
 
-      // render rows
       transactionsBody.innerHTML = '';
       if (list.length === 0) {
-        transactionsBody.innerHTML = '<tr><td colspan="6"><div class="no-data">Belum ada transaksi sesuai filter</div></td></tr>';
+        transactionsBody.innerHTML = '<tr><td colspan="6"><div class="text-muted" style="padding:18px 0; text-align:center">Belum ada transaksi sesuai filter</div></td></tr>';
       } else {
         for (const t of list) {
           const tr = document.createElement('tr');
-          const sign = t.type === 'in' ? '+' : '-';
-          const amt = formatCurrency((t.type === 'out' ? -1 : 1) * Math.abs(Number(t.amount)));
+          const amt = (t.type==='out' ? '-' : '') + formatCurrency(Math.abs(Number(t.amount)));
+          tr.classList.add('row-enter');
           tr.innerHTML = `
-            <td>${formatDateDisplay(t.date)}</td>
+            <td style="width:120px">${formatDateDisplay(t.date)}</td>
             <td>${escapeHtml(t.description)}</td>
-            <td>${createCategoryBadge(t.category)}</td>
-            <td class="text-end">${amt}</td>
-            <td class="text-center"><span class="badge ${t.type==='in'?'bg-success':'bg-danger'}">${t.type==='in'?'Pemasukan':'Pengeluaran'}</span></td>
-            <td class="text-end">
+            <td style="width:160px">${createCategoryBadge(t.category)}</td>
+            <td class="text-end" style="width:140px">${amt}</td>
+            <td class="text-center" style="width:120px"><span class="badge ${t.type==='in'?'bg-success':'bg-danger'}">${t.type==='in'?'Pemasukan':'Pengeluaran'}</span></td>
+            <td class="text-end" style="width:110px">
               <div class="btn-group btn-group-sm" role="group">
-                <button class="btn btn-outline-primary btn-sm btn-edit" data-id="${t.id}" title="Edit"><i class="bi bi-pencil"></i></button>
-                <button class="btn btn-outline-danger btn-sm btn-delete" data-id="${t.id}" title="Hapus"><i class="bi bi-trash"></i></button>
+                <button class="btn btn-outline-light btn-edit" data-id="${t.id}" title="Edit"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-outline-danger btn-delete" data-id="${t.id}" title="Hapus"><i class="bi bi-trash"></i></button>
               </div>
-            </td>
-          `;
+            </td>`;
           transactionsBody.appendChild(tr);
         }
       }
-
-      // attach event listeners for edit/delete
-      $$('.btn-edit', transactionsBody).forEach(b => b.addEventListener('click', e => {
-        const id = b.dataset.id;
-        openEditModal(id);
-      }));
-      $$('.btn-delete', transactionsBody).forEach(b => b.addEventListener('click', e => {
-        const id = b.dataset.id;
-        deleteTransaction(id);
-      }));
-
       renderSummary(list);
-      updateCharts(); // keep charts in sync with current list (we use full transactions for charts but you may want filtered)
+      updateCharts();
     }
 
     function renderAll() {
@@ -429,12 +517,13 @@
       updateCharts();
     }
 
-    // ====== CRUD ======
+    /* =================== CRUD =================== */
     function addTransaction(tx) {
       tx.id = uid();
       transactions.push(tx);
       saveData();
       renderAll();
+      showToast('Transaksi disimpan', 'bg-success text-white');
     }
     function updateTransaction(id, data) {
       const idx = transactions.findIndex(t => t.id === id);
@@ -442,24 +531,24 @@
       transactions[idx] = { ...transactions[idx], ...data };
       saveData();
       renderAll();
+      showToast('Perubahan disimpan', 'bg-success text-white');
     }
     function deleteTransaction(id) {
       if (!confirm('Hapus transaksi ini?')) return;
       transactions = transactions.filter(t => t.id !== id);
       saveData();
       renderAll();
+      showToast('Transaksi dihapus', 'bg-danger text-white');
     }
 
-    // ====== Modal & Form Handling ======
+    /* =================== Modal & Form =================== */
     const modal = new bootstrap.Modal($('#modalForm'));
     const modalTitle = $('#modalTitle');
     const formTransaction = $('#formTransaction');
 
-    $('#btnAdd').addEventListener('click', () => {
-      openAddModal();
-    });
+    $('#btnAdd').addEventListener('click', openAddModal);
 
-    function openAddModal() {
+    function openAddModal(){
       modalTitle.textContent = 'Tambah Transaksi';
       $('#txId').value = '';
       $('#txDate').value = formatDateISO(new Date());
@@ -470,9 +559,9 @@
       modal.show();
     }
 
-    function openEditModal(id) {
+    function openEditModal(id){
       const tx = transactions.find(t => t.id === id);
-      if (!tx) { alert('Transaksi tidak ditemukan'); return; }
+      if (!tx) { showToast('Transaksi tidak ditemukan', 'bg-warning text-dark'); return; }
       modalTitle.textContent = 'Edit Transaksi';
       $('#txId').value = tx.id;
       $('#txDate').value = formatDateISO(tx.date);
@@ -483,7 +572,7 @@
       modal.show();
     }
 
-    formTransaction.addEventListener('submit', function(e) {
+    formTransaction.addEventListener('submit', function(e){
       e.preventDefault();
       const id = $('#txId').value;
       const data = {
@@ -493,13 +582,12 @@
         amount: Math.abs(Number($('#txAmount').value) || 0),
         type: $('#txType').value
       };
-      if (!data.amount) { alert('Masukkan jumlah yang valid'); return; }
-      if (id) updateTransaction(id, data);
-      else addTransaction(data);
+      if (!data.amount) { showToast('Masukkan jumlah yang valid', 'bg-warning text-dark'); return; }
+      if (id) updateTransaction(id, data); else addTransaction(data);
       modal.hide();
     });
 
-    // ====== Filters & Search ======
+    /* =================== Filters & Search =================== */
     filterTime.addEventListener('change', () => {
       if (filterTime.value === 'custom') customRange.classList.remove('d-none');
       else {
@@ -508,29 +596,24 @@
       }
     });
     applyRange.addEventListener('click', () => {
-      if (!customFrom.value || !customTo.value) { alert('Pilih tanggal dari dan ke'); return; }
+      if (!customFrom.value || !customTo.value) { showToast('Pilih tanggal dari dan ke', 'bg-warning text-dark'); return; }
       renderTransactions({ q: searchInput.value, time: 'custom', from: customFrom.value, to: customTo.value });
     });
     searchInput.addEventListener('input', debounce(() => {
       renderTransactions({ q: searchInput.value, time: filterTime.value, from: customFrom.value, to: customTo.value });
     }, 250));
-
-    btnShowAll.addEventListener('click', () => {
-      searchInput.value = '';
-      filterTime.value = 'all';
-      customRange.classList.add('d-none');
-      renderTransactions({ q: '', time: 'all' });
+    $('#btnShowAll').addEventListener('click', () => {
+      searchInput.value = ''; filterTime.value = 'all'; customRange.classList.add('d-none');
+      renderTransactions({ q:'', time:'all' });
     });
+    $('#btnClearAll').addEventListener('click', resetData);
 
-    btnClearAll.addEventListener('click', resetData);
-
-    // ====== Charts ======
+    /* =================== Charts =================== */
     let lineChart = null, pieChart = null;
     const lineCtx = $('#lineChart');
     const pieCtx = $('#pieChart');
 
-    function aggregateForLine(range='30') {
-      // returns { labels:[], data:[] } for last N days or all
+    function aggregateForLine(range='30'){
       let items = [...transactions];
       items.sort((a,b) => new Date(a.date) - new Date(b.date));
       if (range !== 'all') {
@@ -540,39 +623,27 @@
         start.setHours(0,0,0,0);
         items = items.filter(t => new Date(t.date) >= start);
       }
-      // build daily balance series
       const map = {};
       for (const t of items) {
         const d = formatDateISO(t.date);
-        const val = t.type === 'in' ? Number(t.amount) : -Number(t.amount);
-        map[d] = (map[d] || 0) + val;
+        map[d] = (map[d] || 0) + (t.type==='in' ? Number(t.amount) : -Number(t.amount));
       }
-      // convert to cumulative balance
-      const dates = [];
-      const today = new Date();
       let firstDate;
       if (range === 'all') {
-        if (items.length === 0) {
-          firstDate = formatDateISO(new Date());
-        } else {
-          firstDate = formatDateISO(items[0].date);
-        }
+        firstDate = items.length ? formatDateISO(items[0].date) : formatDateISO(new Date());
       } else {
         const n = Number(range);
-        const start = new Date();
-        start.setDate(start.getDate() - (n-1));
-        firstDate = formatDateISO(start);
+        const s = new Date();
+        s.setDate(s.getDate() - (n-1));
+        firstDate = formatDateISO(s);
       }
-      const endDate = formatDateISO(today);
+      const endDate = formatDateISO(new Date());
       const cur = new Date(firstDate);
       const labels = [];
       const data = [];
-      let cumulative = 0;
-      // if there are earlier transactions before firstDate, incorporate their sum
-      const earlierSum = transactions
+      let cumulative = transactions
         .filter(t => new Date(t.date) < new Date(firstDate))
         .reduce((s,t) => s + (t.type==='in'?Number(t.amount):-Number(t.amount)), 0);
-      cumulative = earlierSum;
       while (formatDateISO(cur) <= endDate) {
         const key = formatDateISO(cur);
         cumulative += (map[key] || 0);
@@ -583,20 +654,25 @@
       return { labels, data };
     }
 
-    function aggregateForPie() {
+    function aggregateForPie(){
       const map = {};
       for (const t of transactions) {
         const cat = t.category || 'Lainnya';
-        const val = t.type === 'in' ? Number(t.amount) : Number(t.amount); // use absolute sums per category
-        map[cat] = (map[cat] || 0) + val;
+        map[cat] = (map[cat] || 0) + Math.abs(Number(t.amount));
       }
       const labels = Object.keys(map);
       const data = labels.map(k => Math.round(map[k]));
       return { labels, data };
     }
 
+    function generateColors(n){
+      const base = ['#5b9df9','#20c997','#ff6b6b','#fd7e14','#6f42c1','#0dcaf0','#ffc107','#e83e8c','#6610f2','#4b5563'];
+      const out = [];
+      for (let i=0;i<n;i++) out.push(base[i % base.length]);
+      return out;
+    }
+
     function updateCharts() {
-      // line chart
       const range = $('#trendRange').value;
       const lineAgg = aggregateForLine(range);
       const lineLabels = lineAgg.labels.map(d => (new Date(d)).toLocaleDateString('id-ID'));
@@ -614,27 +690,30 @@
             datasets: [{
               label: 'Saldo (Rp)',
               data: lineData,
-              borderColor: '#0d6efd',
-              backgroundColor: 'rgba(13,110,253,0.08)',
+              borderColor: '#5b9df9',
+              backgroundColor: 'linear-gradient(0deg, rgba(91,157,249,0.12), rgba(91,157,249,0.02))',
               fill: true,
-              tension: 0.25,
-              pointRadius: 0
+              tension: 0.28,
+              pointRadius: 2,
+              pointHoverRadius: 6,
             }]
           },
           options: {
-            responsive: true,
+            animation: { duration: 700, easing: 'easeOutCubic' },
             plugins: {
-              tooltip: { callbacks: { label: ctx => formatCurrency(ctx.parsed.y) } },
-              legend: { display: false }
+              legend: { display: false },
+              tooltip: { callbacks: { label: ctx => formatCurrency(ctx.parsed.y) } }
             },
             scales: {
-              y: { ticks: { callback: v => formatCurrency(v) } }
-            }
+              y: { ticks: { callback: v => formatCurrency(v) } },
+              x: { ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 8 } }
+            },
+            responsive: true,
+            maintainAspectRatio: false
           }
         });
       }
 
-      // pie chart
       const pieAgg = aggregateForPie();
       const pieLabels = pieAgg.labels;
       const pieData = pieAgg.data;
@@ -657,32 +736,23 @@
             }]
           },
           options: {
-            responsive: true,
+            animation: { duration: 700, easing: 'easeOutCubic' },
             plugins: {
               tooltip: { callbacks: { label: ctx => `${ctx.label}: ${formatCurrency(ctx.parsed)}` } },
-              legend: { position: 'bottom', labels: { boxWidth: 12 } }
+              legend: { position: 'bottom', labels: { boxWidth: 12, color: '#cbd5e1' } }
             },
-            cutout: '60%'
+            cutout: '60%',
+            responsive: true,
+            maintainAspectRatio: false
           }
         });
       }
     }
 
-    function generateColors(n) {
-      const base = [
-        '#0d6efd','#198754','#dc3545','#fd7e14','#6f42c1','#20c997','#6610f2','#0dcaf0','#ffc107','#e83e8c'
-      ];
-      const out = [];
-      for (let i=0;i<n;i++){
-        out.push(base[i % base.length]);
-      }
-      return out;
-    }
-
     $('#trendRange').addEventListener('change', updateCharts);
-    $('#btnRefreshCharts').addEventListener('click', updateCharts);
+    $('#btnRefreshCharts').addEventListener('click', () => { updateCharts(); showToast('Charts diperbarui', 'bg-dark text-white'); });
 
-    // ====== Import / Export CSV ======
+    /* =================== Import / Export CSV =================== */
     const fileInput = $('#fileInput');
     $('#btnImportCSV').addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', handleFileSelect);
@@ -695,7 +765,6 @@
         const text = ev.target.result;
         try {
           const parsed = parseCSV(text);
-          // parsed is array of objects. Expect headers: date,description,category,amount,type
           let imported = 0;
           for (const r of parsed) {
             if (!r.date || !r.amount) continue;
@@ -711,22 +780,19 @@
             imported++;
           }
           if (imported > 0) {
-            saveData();
-            renderAll();
-            alert('Berhasil mengimpor ' + imported + ' transaksi.');
-          } else alert('Tidak ada data valid yang diimpor.');
+            saveData(); renderAll(); showToast('Berhasil mengimpor ' + imported + ' transaksi', 'bg-success text-white');
+          } else showToast('Tidak ada data valid yang diimpor', 'bg-warning text-dark');
         } catch (err) {
-          alert('Gagal mengimpor CSV: ' + err);
+          showToast('Gagal mengimpor CSV', 'bg-danger text-white');
+          console.error(err);
         }
       };
       reader.readAsText(f, 'utf-8');
-      // reset
       fileInput.value = '';
     }
 
     function parseCSV(text) {
-      // simple CSV parser, returns array of objects using header row
-      const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+      const lines = text.split(/\r?\n/).filter(l => l.trim() !== '');
       if (lines.length === 0) return [];
       const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
       const rows = [];
@@ -735,23 +801,20 @@
         if (parts.length === 0) continue;
         const obj = {};
         for (let j=0;j<headers.length;j++){
-          obj[headers[j]] = parts[j] !== undefined ? parts[j].trim() : '';
+          obj[headers[j]] = parts[j] !== undefined ? parts[j].trim().replace(/^"|"$/g,'') : '';
         }
         rows.push(obj);
       }
       return rows;
     }
     function splitCSVLine(line) {
-      // handles quotes
-      const result = [];
-      let cur = '', inQuote = false;
+      const result = []; let cur = '', inQuote=false;
       for (let i=0;i<line.length;i++){
         const ch = line[i];
-        if (ch === '"' ) {
+        if (ch === '"') {
           if (inQuote && line[i+1] === '"') { cur += '"'; i++; } else inQuote = !inQuote;
         } else if (ch === ',' && !inQuote) {
-          result.push(cur);
-          cur = '';
+          result.push(cur); cur = '';
         } else cur += ch;
       }
       result.push(cur);
@@ -759,7 +822,7 @@
     }
 
     $('#btnExportCSV').addEventListener('click', () => {
-      if (transactions.length === 0) { alert('Tidak ada transaksi untuk diekspor.'); return; }
+      if (transactions.length === 0) { showToast('Tidak ada transaksi untuk diekspor', 'bg-warning text-dark'); return; }
       const header = ['date','description','category','amount','type'];
       const rows = transactions.map(t => [
         `"${t.date}"`,
@@ -768,7 +831,7 @@
         `${t.amount}`,
         `${t.type}`
       ].join(','));
-      const csv = [header.join(','), ...rows].join('\\n');
+      const csv = [header.join(','), ...rows].join('\n');
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -776,67 +839,73 @@
       a.download = 'cashflow_export_' + formatDateISO(new Date()) + '.csv';
       a.click();
       URL.revokeObjectURL(url);
+      showToast('CSV diekspor', 'bg-dark text-white');
     });
 
-    // ====== Export PDF (screenshot dashboard) ======
+    /* =================== Export PDF (screenshot) =================== */
     $('#btnExportPDF').addEventListener('click', async () => {
-      const container = document.querySelector('main');
-      if (!container) { alert('Area tidak ditemukan'); return; }
+      const container = document.querySelector('.container-main');
+      if (!container) { showToast('Area tidak ditemukan', 'bg-danger text-white'); return; }
       const opt = { scale: 2, useCORS: true, logging: false };
-      const canv = await html2canvas(container, opt);
-      const imgData = canv.toDataURL('image/png');
-      const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      const imgProps = pdf.getImageProperties(imgData);
-      const imgRatio = imgProps.width / imgProps.height;
-      const pdfImgWidth = pageWidth - 20;
-      const pdfImgHeight = pdfImgWidth / imgRatio;
-      pdf.addImage(imgData, 'PNG', 10, 10, pdfImgWidth, Math.min(pdfImgHeight, pageHeight - 20));
-      pdf.save('cashflow_' + formatDateISO(new Date()) + '.pdf');
-    });
-
-    // ====== Utility: debounce ======
-    function debounce(fn, wait = 200) {
-      let t;
-      return (...args) => {
-        clearTimeout(t);
-        t = setTimeout(() => fn.apply(this, args), wait);
-      };
-    }
-
-    // ====== Escape load & init ======
-    function init() {
-      loadData();
-      renderAll();
-      // attach other handlers for edit buttons dynamically created in renderTransactions
-      document.body.addEventListener('click', function(e) {
-        if (e.target.matches('.btn-edit, .btn-edit *')) {
-          const btn = e.target.closest('.btn-edit');
-          if (btn) openEditModal(btn.dataset.id);
-        } else if (e.target.matches('.btn-delete, .btn-delete *')) {
-          const btn = e.target.closest('.btn-delete');
-          if (btn) deleteTransaction(btn.dataset.id);
-        }
-      });
-    }
-
-    // init on load
-    init();
-
-    // ====== Extra: Keyboard shortcuts (optional) ======
-    document.addEventListener('keydown', (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'n') {
-        e.preventDefault();
-        openAddModal();
+      try {
+        const canv = await html2canvas(container, opt);
+        const imgData = canv.toDataURL('image/png');
+        const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const imgProps = pdf.getImageProperties(imgData);
+        const imgRatio = imgProps.width / imgProps.height;
+        const pdfImgWidth = pageWidth - 20;
+        const pdfImgHeight = pdfImgWidth / imgRatio;
+        pdf.addImage(imgData, 'PNG', 10, 10, pdfImgWidth, Math.min(pdfImgHeight, pdf.internal.pageSize.getHeight()-20));
+        pdf.save('cashflow_' + formatDateISO(new Date()) + '.pdf');
+        showToast('PDF diunduh', 'bg-dark text-white');
+      } catch (err) {
+        showToast('Gagal membuat PDF', 'bg-danger text-white');
+        console.error(err);
       }
     });
 
-    // ====== Small accessibility: confirm before leaving if unsaved modal ======
-    window.addEventListener('beforeunload', (e) => {
-      // no-op currently
-    });
+    /* =================== Utilities =================== */
+    function debounce(fn, wait = 200) {
+      let t;
+      return (...args) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, args), wait); };
+    }
 
+    /* =================== Init & Delegation =================== */
+    function init() {
+      loadData();
+      renderAll();
+
+      // delegate edit & delete
+      document.body.addEventListener('click', function(e) {
+        const edit = e.target.closest('.btn-edit');
+        const del = e.target.closest('.btn-delete');
+        if (edit) { openEditModal(edit.dataset.id); }
+        if (del) { deleteTransaction(del.dataset.id); }
+      });
+
+      // keyboard shortcut
+      document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'n') { e.preventDefault(); openAddModal(); }
+      });
+
+      // small visual: observe charts to update animation only when visible
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(en => { if (en.isIntersecting) updateCharts(); });
+      }, { threshold: 0.2 });
+      obs.observe(document.getElementById('lineChartCard'));
+      obs.observe(document.getElementById('pieChartCard'));
+    }
+
+    init();
+
+    // small safety: confirm before unload if modal open
+    window.addEventListener('beforeunload', (e) => {
+      if (document.querySelector('.modal.show')) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    });
   </script>
 </body>
 </html>
